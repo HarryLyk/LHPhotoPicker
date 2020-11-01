@@ -2,28 +2,36 @@
 //  MainScreenController.swift
 //  LHPhotoPicker
 //
-//  Created by Igor Lukash on 29.10.2020.
+//  Created by Igor Lukash on 01.11.2020.
 //
 
 import UIKit
 
 class MainScreenController: UIViewController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+    @IBOutlet weak var imageView: UIImageView! {
+        didSet{
+            imageView.layer.borderWidth = 5
+            imageView.layer.borderColor = UIColor.systemPink.cgColor
+        }
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    @IBOutlet weak var getImageButton: UIButton! {
+        didSet {
+            getImageButton.backgroundColor = LHColors.babyBlueEyes
+            getImageButton.layer.shadowOffset = CGSize(width: 3, height: 3)
+            getImageButton.layer.shadowColor = UIColor.systemGray.cgColor
+            getImageButton.layer.cornerRadius = 25
+            getImageButton.setTitle("Get Image", for: .normal)
+            getImageButton.tintColor = UIColor.black
+            getImageButton.titleLabel?.font = .systemFont(ofSize: 18)
+        }
     }
-    */
-
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+    }
+    
 }

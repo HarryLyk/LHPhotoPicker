@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Main Screen Controller-->
+        <scene sceneID="uGI-Ni-f8b">
+            <objects>
+                <viewController storyboardIdentifier="MainScreenController" id="3o6-hX-8ek" customClass="MainScreenController" customModule="LHPhotoPicker" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="kQw-vh-Blg">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1XS-MP-4bP">
+                                <rect key="frame" x="20" y="144" width="374" height="200"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="ckK-wb-bI6"/>
+                                </constraints>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4lV-f4-9eh">
+                                <rect key="frame" x="107" y="444" width="200" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="200" id="Tk7-mO-Mmf"/>
+                                    <constraint firstAttribute="height" constant="60" id="bSF-mc-WFE"/>
+                                </constraints>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="vLB-HC-6Q0"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="vLB-HC-6Q0" firstAttribute="trailing" secondItem="1XS-MP-4bP" secondAttribute="trailing" constant="20" id="49a-ht-R7t"/>
+                            <constraint firstItem="4lV-f4-9eh" firstAttribute="top" secondItem="1XS-MP-4bP" secondAttribute="bottom" constant="100" id="D5I-tN-xgI"/>
+                            <constraint firstItem="4lV-f4-9eh" firstAttribute="centerX" secondItem="kQw-vh-Blg" secondAttribute="centerX" id="G9o-hz-j5D"/>
+                            <constraint firstItem="1XS-MP-4bP" firstAttribute="leading" secondItem="vLB-HC-6Q0" secondAttribute="leading" constant="20" id="XKd-Zw-GlR"/>
+                            <constraint firstItem="1XS-MP-4bP" firstAttribute="top" secondItem="vLB-HC-6Q0" secondAttribute="top" constant="100" id="XTX-EJ-2av"/>
+                            <constraint firstItem="1XS-MP-4bP" firstAttribute="centerX" secondItem="kQw-vh-Blg" secondAttribute="centerX" id="o2F-L3-IpA"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="getImageButton" destination="4lV-f4-9eh" id="Bvq-5O-jTm"/>
+                        <outlet property="imageView" destination="1XS-MP-4bP" id="eMz-2Z-4Op"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SCC-hY-qxg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-49" y="-71"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
