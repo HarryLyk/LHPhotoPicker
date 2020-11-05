@@ -1,0 +1,6 @@
+framework module Pods_LHPhotoPicker {
+  umbrella header "Pods-LHPhotoPicker-umbrella.h"
+
+  export *
+  module * { export * }
+}

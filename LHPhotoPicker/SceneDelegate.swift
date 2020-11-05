@@ -20,10 +20,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
-            let storyboard = UIStoryboard(name: "MainScreen", bundle: nil)
-            let mainVC = storyboard.instantiateViewController(identifier: MainScreenController.identificator)
+            let storyboard = UIStoryboard(name: "MainScreenController", bundle: nil)
+            let mainVC = storyboard.instantiateViewController(identifier: MainScreenController.identificator) as MainScreenController
             window = UIWindow(windowScene: windowScene)
-            window?.rootViewController = mainVC
+            window?.rootViewController = UINavigationController(rootViewController: mainVC)
             window?.makeKeyAndVisible()
         }
     }

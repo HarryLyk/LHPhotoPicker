@@ -3,28 +3,39 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9027379125546B38003EDE70 /* PhotoSelectionController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9027379025546B38003EDE70 /* PhotoSelectionController.storyboard */; };
+		9027379725548530003EDE70 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9027379625548530003EDE70 /* TestViewController.swift */; };
+		9027379A2554855E003EDE70 /* TestViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 902737992554855E003EDE70 /* TestViewController.storyboard */; };
 		905C0B86254F0F2B007D00C2 /* UIViewControllerEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905C0B85254F0F2B007D00C2 /* UIViewControllerEx.swift */; };
 		905C0B8B254F1325007D00C2 /* MainScreenController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905C0B8A254F1325007D00C2 /* MainScreenController.swift */; };
-		905C0B8E254F1331007D00C2 /* MainScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 905C0B8D254F1331007D00C2 /* MainScreen.storyboard */; };
+		905C0B8E254F1331007D00C2 /* MainScreenController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 905C0B8D254F1331007D00C2 /* MainScreenController.storyboard */; };
 		905C0B97254F3B72007D00C2 /* LHColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905C0B96254F3B72007D00C2 /* LHColors.swift */; };
 		905C0B9E254F3D11007D00C2 /* UIColorEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905C0B9D254F3D11007D00C2 /* UIColorEx.swift */; };
+		905C0BB02553FBE4007D00C2 /* PhotoSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905C0BAF2553FBE4007D00C2 /* PhotoSelectionController.swift */; };
+		905C0BB32553FBF6007D00C2 /* PhotoSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905C0BB22553FBF6007D00C2 /* PhotoSelectionViewModel.swift */; };
 		90E7FD52254B524D0083393D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E7FD51254B524D0083393D /* AppDelegate.swift */; };
 		90E7FD54254B524D0083393D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E7FD53254B524D0083393D /* SceneDelegate.swift */; };
 		90E7FD58254B524D0083393D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90E7FD57254B524D0083393D /* Assets.xcassets */; };
 		90E7FD5B254B524D0083393D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90E7FD5A254B524D0083393D /* Preview Assets.xcassets */; };
 		90E7FD5E254B524D0083393D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 90E7FD5C254B524D0083393D /* LaunchScreen.storyboard */; };
+		B53BFCBC0C60E694B307589F /* Pods_LHPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C65718F12D29D80B31D78167 /* Pods_LHPhotoPicker.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9027379025546B38003EDE70 /* PhotoSelectionController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PhotoSelectionController.storyboard; sourceTree = "<group>"; };
+		9027379625548530003EDE70 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
+		902737992554855E003EDE70 /* TestViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = TestViewController.storyboard; sourceTree = "<group>"; };
 		905C0B85254F0F2B007D00C2 /* UIViewControllerEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerEx.swift; sourceTree = "<group>"; };
 		905C0B8A254F1325007D00C2 /* MainScreenController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenController.swift; sourceTree = "<group>"; };
-		905C0B8D254F1331007D00C2 /* MainScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainScreen.storyboard; sourceTree = "<group>"; };
+		905C0B8D254F1331007D00C2 /* MainScreenController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainScreenController.storyboard; sourceTree = "<group>"; };
 		905C0B96254F3B72007D00C2 /* LHColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHColors.swift; sourceTree = "<group>"; };
 		905C0B9D254F3D11007D00C2 /* UIColorEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorEx.swift; sourceTree = "<group>"; };
+		905C0BAF2553FBE4007D00C2 /* PhotoSelectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSelectionController.swift; sourceTree = "<group>"; };
+		905C0BB22553FBF6007D00C2 /* PhotoSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSelectionViewModel.swift; sourceTree = "<group>"; };
 		90E7FD4E254B524D0083393D /* LHPhotoPicker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LHPhotoPicker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		90E7FD51254B524D0083393D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		90E7FD53254B524D0083393D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -32,6 +43,9 @@
 		90E7FD5A254B524D0083393D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		90E7FD5D254B524D0083393D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		90E7FD5F254B524D0083393D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A01AAE7F42DECC25BB958B57 /* Pods-LHPhotoPicker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LHPhotoPicker.debug.xcconfig"; path = "Target Support Files/Pods-LHPhotoPicker/Pods-LHPhotoPicker.debug.xcconfig"; sourceTree = "<group>"; };
+		C38FF25AD1387DFC38660DD6 /* Pods-LHPhotoPicker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LHPhotoPicker.release.xcconfig"; path = "Target Support Files/Pods-LHPhotoPicker/Pods-LHPhotoPicker.release.xcconfig"; sourceTree = "<group>"; };
+		C65718F12D29D80B31D78167 /* Pods_LHPhotoPicker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LHPhotoPicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,12 +53,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B53BFCBC0C60E694B307589F /* Pods_LHPhotoPicker.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9027379525548515003EDE70 /* TestViewController */ = {
+			isa = PBXGroup;
+			children = (
+				9027379625548530003EDE70 /* TestViewController.swift */,
+				902737992554855E003EDE70 /* TestViewController.storyboard */,
+			);
+			path = TestViewController;
+			sourceTree = "<group>";
+		};
 		905C0B7B254F0605007D00C2 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -62,11 +86,23 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		905C0BAB2553FBA4007D00C2 /* PhotoSelection */ = {
+			isa = PBXGroup;
+			children = (
+				9027379025546B38003EDE70 /* PhotoSelectionController.storyboard */,
+				905C0BAF2553FBE4007D00C2 /* PhotoSelectionController.swift */,
+				905C0BB22553FBF6007D00C2 /* PhotoSelectionViewModel.swift */,
+			);
+			path = PhotoSelection;
+			sourceTree = "<group>";
+		};
 		90E7FD45254B524D0083393D = {
 			isa = PBXGroup;
 			children = (
 				90E7FD50254B524D0083393D /* LHPhotoPicker */,
 				90E7FD4F254B524D0083393D /* Products */,
+				B81A709B7B17AE3F64CE8E8A /* Pods */,
+				EBB202FCBF5AE9F32EE49DC3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -84,6 +120,8 @@
 				90E7FD51254B524D0083393D /* AppDelegate.swift */,
 				90E7FD53254B524D0083393D /* SceneDelegate.swift */,
 				90E7FD66254B533C0083393D /* MainScreen */,
+				905C0BAB2553FBA4007D00C2 /* PhotoSelection */,
+				9027379525548515003EDE70 /* TestViewController */,
 				905C0B7B254F0605007D00C2 /* Extensions */,
 				905C0B90254F3874007D00C2 /* Resources */,
 				90E7FD57254B524D0083393D /* Assets.xcassets */,
@@ -105,10 +143,27 @@
 		90E7FD66254B533C0083393D /* MainScreen */ = {
 			isa = PBXGroup;
 			children = (
+				905C0B8D254F1331007D00C2 /* MainScreenController.storyboard */,
 				905C0B8A254F1325007D00C2 /* MainScreenController.swift */,
-				905C0B8D254F1331007D00C2 /* MainScreen.storyboard */,
 			);
 			path = MainScreen;
+			sourceTree = "<group>";
+		};
+		B81A709B7B17AE3F64CE8E8A /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A01AAE7F42DECC25BB958B57 /* Pods-LHPhotoPicker.debug.xcconfig */,
+				C38FF25AD1387DFC38660DD6 /* Pods-LHPhotoPicker.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		EBB202FCBF5AE9F32EE49DC3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C65718F12D29D80B31D78167 /* Pods_LHPhotoPicker.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -118,9 +173,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 90E7FD62254B524D0083393D /* Build configuration list for PBXNativeTarget "LHPhotoPicker" */;
 			buildPhases = (
+				1FBF6B03D332AC4C00959F31 /* [CP] Check Pods Manifest.lock */,
 				90E7FD4A254B524D0083393D /* Sources */,
 				90E7FD4B254B524D0083393D /* Frameworks */,
 				90E7FD4C254B524D0083393D /* Resources */,
+				D968061297223A7F841E28D4 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -169,13 +226,57 @@
 			buildActionMask = 2147483647;
 			files = (
 				90E7FD5E254B524D0083393D /* LaunchScreen.storyboard in Resources */,
-				905C0B8E254F1331007D00C2 /* MainScreen.storyboard in Resources */,
+				905C0B8E254F1331007D00C2 /* MainScreenController.storyboard in Resources */,
+				9027379125546B38003EDE70 /* PhotoSelectionController.storyboard in Resources */,
 				90E7FD5B254B524D0083393D /* Preview Assets.xcassets in Resources */,
 				90E7FD58254B524D0083393D /* Assets.xcassets in Resources */,
+				9027379A2554855E003EDE70 /* TestViewController.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1FBF6B03D332AC4C00959F31 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-LHPhotoPicker-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D968061297223A7F841E28D4 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LHPhotoPicker/Pods-LHPhotoPicker-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LHPhotoPicker/Pods-LHPhotoPicker-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LHPhotoPicker/Pods-LHPhotoPicker-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		90E7FD4A254B524D0083393D /* Sources */ = {
@@ -186,8 +287,11 @@
 				905C0B86254F0F2B007D00C2 /* UIViewControllerEx.swift in Sources */,
 				90E7FD52254B524D0083393D /* AppDelegate.swift in Sources */,
 				905C0B97254F3B72007D00C2 /* LHColors.swift in Sources */,
+				905C0BB32553FBF6007D00C2 /* PhotoSelectionViewModel.swift in Sources */,
 				905C0B8B254F1325007D00C2 /* MainScreenController.swift in Sources */,
 				90E7FD54254B524D0083393D /* SceneDelegate.swift in Sources */,
+				9027379725548530003EDE70 /* TestViewController.swift in Sources */,
+				905C0BB02553FBE4007D00C2 /* PhotoSelectionController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,6 +427,7 @@
 		};
 		90E7FD63254B524D0083393D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A01AAE7F42DECC25BB958B57 /* Pods-LHPhotoPicker.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -338,12 +443,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = LHorg.LHPhotoPicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		90E7FD64254B524D0083393D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C38FF25AD1387DFC38660DD6 /* Pods-LHPhotoPicker.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -359,7 +465,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = LHorg.LHPhotoPicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
