@@ -33,15 +33,6 @@ class MainScreenController: UIViewController {
         }
     }
     
-    @IBAction func btnCancelAction(_ sender: Any) {
-        print("show test")
-        let storyboard = UIStoryboard(name: "TestViewController", bundle: nil)
-        let vc = storyboard.instantiateViewController(identifier: TestViewController.identificator) as! TestViewController
-        
-        self.navigationController?.pushViewController(vc, animated: true)
-        
-    }
-    
     private var disposeBag = DisposeBag()
     
     override func viewDidLoad() {
@@ -52,14 +43,14 @@ class MainScreenController: UIViewController {
                        onError: { (_) in print("some error has occured") })
             .disposed(by: disposeBag)
         
-        
     }
     
     func showPhotoSelectioScreen() {
         let storyboard = UIStoryboard(name: "PhotoSelectionController", bundle: nil)
         let photoSelectionVC = storyboard.instantiateViewController(identifier: PhotoSelectionController.identificator) as! PhotoSelectionController
-
-//        photoSelectionVC.title = "Select photo"
+        photoSelectionVC.viewModel = PhotoSelectionViewModel(cellInRow: 3)
+        
+        photoSelectionVC.title = "Select photo"
         self.navigationController?.pushViewController(photoSelectionVC, animated: true)
     }
     

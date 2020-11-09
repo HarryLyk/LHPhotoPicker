@@ -11,10 +11,17 @@ import RxCocoa
 
 class PhotoSelectionViewModel {
     
+    ///default cell count in a row
+    var cellInRow: Int = 3
+    
     ///this flag is true, cause we are trying to load photoes by default
     var isLoading: BehaviorRelay<Bool> = .init(value: true)
     
     private var disposeBag = DisposeBag()
+    
+    init(cellInRow: Int) {
+        self.cellInRow = cellInRow
+    }
     
     ///load photoes from local storage
     func loadPhotos() {
