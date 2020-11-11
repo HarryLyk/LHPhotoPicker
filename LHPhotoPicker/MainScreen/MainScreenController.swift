@@ -33,6 +33,10 @@ class MainScreenController: UIViewController {
         }
     }
     
+    static var identificator: String {
+        return String(describing: self)
+    }
+        
     private var disposeBag = DisposeBag()
     
     override func viewDidLoad() {
@@ -45,13 +49,21 @@ class MainScreenController: UIViewController {
         
     }
     
+    
     func showPhotoSelectioScreen() {
         let storyboard = UIStoryboard(name: "PhotoSelectionController", bundle: nil)
         let photoSelectionVC = storyboard.instantiateViewController(identifier: PhotoSelectionController.identificator) as! PhotoSelectionController
-        photoSelectionVC.viewModel = PhotoSelectionViewModel(cellInRow: 3)
+        
+        photoSelectionVC.viewModel = setPhotoSelectionViewModel()
         
         photoSelectionVC.title = "Select photo"
         self.navigationController?.pushViewController(photoSelectionVC, animated: true)
+    }
+    
+    ///Set PhotoSelection screen parameters
+    func setPhotoSelectionViewModel() -> PhotoSelectionViewModel {
+        let viewModel = PhotoSelectionViewModel(cellInRowPortriant: 3, cellInRowLandscape: nil)
+        return viewModel
     }
     
 }

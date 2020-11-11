@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		901700E8255AB0C70025F378 /* UICollectionViewCellEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 901700E7255AB0C70025F378 /* UICollectionViewCellEx.swift */; };
 		9027379125546B38003EDE70 /* PhotoSelectionController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9027379025546B38003EDE70 /* PhotoSelectionController.storyboard */; };
 		9027379F2559DC93003EDE70 /* PhotoSelectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9027379D2559DC93003EDE70 /* PhotoSelectionCell.swift */; };
 		902737A02559DC93003EDE70 /* PhotoSelectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9027379E2559DC93003EDE70 /* PhotoSelectionCell.xib */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		901700E7255AB0C70025F378 /* UICollectionViewCellEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionViewCellEx.swift; sourceTree = "<group>"; };
 		9027379025546B38003EDE70 /* PhotoSelectionController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PhotoSelectionController.storyboard; sourceTree = "<group>"; };
 		9027379D2559DC93003EDE70 /* PhotoSelectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSelectionCell.swift; sourceTree = "<group>"; };
 		9027379E2559DC93003EDE70 /* PhotoSelectionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoSelectionCell.xib; sourceTree = "<group>"; };
@@ -74,6 +76,7 @@
 			children = (
 				905C0B85254F0F2B007D00C2 /* UIViewControllerEx.swift */,
 				905C0B9D254F3D11007D00C2 /* UIColorEx.swift */,
+				901700E7255AB0C70025F378 /* UICollectionViewCellEx.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -284,6 +287,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				905C0B9E254F3D11007D00C2 /* UIColorEx.swift in Sources */,
+				901700E8255AB0C70025F378 /* UICollectionViewCellEx.swift in Sources */,
 				905C0B86254F0F2B007D00C2 /* UIViewControllerEx.swift in Sources */,
 				90E7FD52254B524D0083393D /* AppDelegate.swift in Sources */,
 				9027379F2559DC93003EDE70 /* PhotoSelectionCell.swift in Sources */,
