@@ -6,13 +6,14 @@
 //
 
 import Foundation
+import Photos
 import RxSwift
 import RxCocoa
 
 class PhotoSelectionViewModel {
     
     ///collection controller default parameters
-    var totalCellCount: Int = 1
+    var totalCellCount: Int = 0
     var backgroundColor: UIColor = .white
     var cellInRowPortriant: Int = 3
     var cellInRowLandscape: Int = 5
@@ -24,20 +25,20 @@ class PhotoSelectionViewModel {
     var cellSizePortriantScaleFactor: CGFloat = 0
     var cellSizeLandscapeScaleFactor: CGFloat = 0
     
-    ///this flag is true, cause we are trying to load photoes by default
     var isLoading: BehaviorRelay<Bool> = .init(value: true)
-    ///this flag means that orientation has changed
     var isOrientationChanged: BehaviorRelay<Bool> = .init(value: true)
-    ///if cell count changed
     var newCellTotalCount: PublishRelay<Int> = .init()
+    
+    var fetchedItems: [UIImage] = []
+    var selectedItems: [IndexPath : UIImage] = [:]
+    
+    private var disposeBag = DisposeBag()
     
     ///set new cell count if changed (new photoes or whatever)
     func setTotalSetCount(totalCellCount: Int) {
         self.totalCellCount = totalCellCount
         newCellTotalCount.accept(totalCellCount)
     }
-    
-    private var disposeBag = DisposeBag()
     
     init(cellInRowPortriant: Int, cellInRowLandscape: Int?) {
         self.cellInRowPortriant = cellInRowPortriant
@@ -48,12 +49,36 @@ class PhotoSelectionViewModel {
     
     
     
-    ///load photoes from local storage
-    func loadPhotos() {
-        self.setTotalSetCount(totalCellCount: 10)
+    ///load photoes from local storage and add them to
+    func loadMediaData(fetchMediaType: PHAssetMediaType) {
         
-        //don't forget to check if user give us acces to load photoes
+        let imageManager = PHImageManager.default()
+        let fetchOptions = PHFetchOptions()
+        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        let fetchResult = PHAsset.fetchAssets(with: fetchMediaType, options: fetchOptions)
+        let imageRequestOptions = PHImageRequestOptions()
+        imageRequestOptions.deliveryMode = .opportunistic
         
-        //load photoes with error checking
+        if fetchResult.count > 0 {
+            for i in 0..<fetchResult.count {
+                imageManager.requestImage(for: fetchResult.object(at: i) as PHAsset, targetSize: CGSize(width: 500, height: 500), contentMode: .default, options: imageRequestOptions, resultHandler: { (image, error) in
+                    self.fetchedItems.append(image!)
+                })
+            }
+        }
+        
+        setTotalSetCount(totalCellCount: fetchedItems.count)
+    }
+    
+    
+    func addSelectedItems(indexPath: IndexPath, addItem: UIImage) {
+        selectedItems.updateValue(addItem, forKey: indexPath)
+        print("total selected: ", selectedItems.count)
+    }
+    
+    
+    func deleteDeselectedPhoto(indexPath: IndexPath) {
+        selectedItems.removeValue(forKey: indexPath)
+        print("after deselect: ", selectedItems.count)
     }
 }
