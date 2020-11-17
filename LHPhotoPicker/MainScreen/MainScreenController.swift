@@ -14,7 +14,7 @@ class MainScreenController: UIViewController {
     weak var sourceViewController: UIWindow?
     
     @IBOutlet weak var imageView: UIImageView! {
-        didSet{
+        didSet {
             imageView.layer.borderWidth = 5
             imageView.layer.borderColor = UIColor.systemPink.cgColor
         }
@@ -55,6 +55,8 @@ class MainScreenController: UIViewController {
         let photoSelectionVC = storyboard.instantiateViewController(identifier: PhotoSelectionController.identificator) as! PhotoSelectionController
         
         photoSelectionVC.viewModel = setPhotoSelectionViewModel()
+        photoSelectionVC.viewModel.cellInRowPortriant = 3
+        photoSelectionVC.viewModel.cellInRowLandscape = 5
         
         photoSelectionVC.title = "Select photo"
         self.navigationController?.pushViewController(photoSelectionVC, animated: true)

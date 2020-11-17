@@ -11,5 +11,9 @@ import RxSwift
 import RxCocoa
 
 class PhotoRedactorViewModel {
+    var image: UIImage
     
+    init(image: UIImage) {
+        self.image = image
+    }
 }

@@ -15,22 +15,17 @@ class PhotoSelectionViewModel {
     ///collection controller default parameters
     var totalCellCount: Int = 0
     var backgroundColor: UIColor = .white
-    var cellInRowPortriant: Int = 3
-    var cellInRowLandscape: Int = 5
+    var cellInRowPortriant: CGFloat = 3
+    var cellInRowLandscape: CGFloat = 5
     var minimumInteritemSpacing: CGFloat = 1
     var minimumLineSpacing: CGFloat = 1
-    
-    ///because minimumInteritemSpacing value is 'recomended', size of cell may be
-    ///counted incorrect, so the additional scale factor is needed sometimes
-    var cellSizePortriantScaleFactor: CGFloat = 0
-    var cellSizeLandscapeScaleFactor: CGFloat = 0
     
     var isLoading: BehaviorRelay<Bool> = .init(value: true)
     var isOrientationChanged: BehaviorRelay<Bool> = .init(value: true)
     var newCellTotalCount: PublishRelay<Int> = .init()
     
-    var fetchedItems: [UIImage] = []
-    var selectedItems: [IndexPath : UIImage] = [:]
+    var fetchedPhotoes: [UIImage] = []
+    var selectedPhotoes: [IndexPath : UIImage] = [:]
     
     private var disposeBag = DisposeBag()
     
@@ -40,7 +35,7 @@ class PhotoSelectionViewModel {
         newCellTotalCount.accept(totalCellCount)
     }
     
-    init(cellInRowPortriant: Int, cellInRowLandscape: Int?) {
+    init(cellInRowPortriant: CGFloat, cellInRowLandscape: CGFloat?) {
         self.cellInRowPortriant = cellInRowPortriant
         if cellInRowLandscape != nil {
             self.cellInRowLandscape = cellInRowLandscape!
@@ -48,10 +43,9 @@ class PhotoSelectionViewModel {
     }
     
     
-    
     ///load photoes from local storage and add them to
     func loadMediaData(fetchMediaType: PHAssetMediaType) {
-        
+            
         let imageManager = PHImageManager.default()
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
@@ -62,23 +56,21 @@ class PhotoSelectionViewModel {
         if fetchResult.count > 0 {
             for i in 0..<fetchResult.count {
                 imageManager.requestImage(for: fetchResult.object(at: i) as PHAsset, targetSize: CGSize(width: 500, height: 500), contentMode: .default, options: imageRequestOptions, resultHandler: { (image, error) in
-                    self.fetchedItems.append(image!)
+                    self.fetchedPhotoes.append(image!)
                 })
             }
         }
+        self.setTotalSetCount(totalCellCount: self.fetchedPhotoes.count)
         
-        setTotalSetCount(totalCellCount: fetchedItems.count)
     }
     
     
-    func addSelectedItems(indexPath: IndexPath, addItem: UIImage) {
-        selectedItems.updateValue(addItem, forKey: indexPath)
-        print("total selected: ", selectedItems.count)
+    func addSelectedPhoto(indexPath: IndexPath, addPhotoes: UIImage) {
+        selectedPhotoes.updateValue(addPhotoes, forKey: indexPath)
     }
     
     
     func deleteDeselectedPhoto(indexPath: IndexPath) {
-        selectedItems.removeValue(forKey: indexPath)
-        print("after deselect: ", selectedItems.count)
+        selectedPhotoes.removeValue(forKey: indexPath)
     }
 }

@@ -28,7 +28,7 @@ class PhotoSelectionController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupCollectionView()
+        setupCollectionViewWithLayout()
         
         viewModel.isLoading
             .subscribe(onNext: {
@@ -116,22 +116,20 @@ class PhotoSelectionController: UIViewController {
     
     
     ///configure collection view according to set viewModel data
-    private func setupCollectionView() {
+    private func setupCollectionViewWithLayout() {
         
         photoCollectionView.dataSource = self
         photoCollectionView.delegate = self
         photoCollectionView.register(UINib(nibName: PhotoSelectionCell.reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: PhotoSelectionCell.reuseIdentifier)
         
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        
         ///setup cell size data
-        let collectionViewWidth = photoCollectionView.bounds.width
+        let collectionViewWidth = photoCollectionView.frame.width
         let cellInRow = getCurrentOrientationCellCount()
         let cellSize = (collectionViewWidth - (viewModel.minimumInteritemSpacing * CGFloat(cellInRow - 1))) / CGFloat(cellInRow)
         
-        ///set scale factor, which align space between cells according to set minimumInteritemSpacing and additional scale factor
-        //cellSize = cellSize - ((cellSize/100)*3.2) + getOrientationScaleFactor()
-        
         ///apply viewModel data to collection view
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         layout.minimumInteritemSpacing = viewModel.minimumInteritemSpacing
         layout.minimumLineSpacing = viewModel.minimumLineSpacing
@@ -143,7 +141,7 @@ class PhotoSelectionController: UIViewController {
     
     ///get cell count for different screen orientation if set
     ///the default values are 3 cells in a row for portriant and 5 for landscape
-    private func getCurrentOrientationCellCount() -> Int {
+    private func getCurrentOrientationCellCount() -> CGFloat {
         
         switch UIDevice.current.orientation {
         case .portrait, .portraitUpsideDown, .faceUp, .faceDown, .unknown:
@@ -155,20 +153,6 @@ class PhotoSelectionController: UIViewController {
         }
     }
     
-    
-    ///get additional scale factor if set to the cell size
-    ///the default values are 0
-    private func getOrientationScaleFactor() -> CGFloat {
-        
-        switch UIDevice.current.orientation {
-        case .portrait, .portraitUpsideDown, .faceUp, .faceDown, .unknown:
-            return viewModel.cellSizePortriantScaleFactor
-        case .landscapeLeft, .landscapeRight:
-            return viewModel.cellSizeLandscapeScaleFactor
-        @unknown default:
-            return viewModel.cellSizePortriantScaleFactor
-        }
-    }
 }
 
 extension PhotoSelectionController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -187,21 +171,31 @@ extension PhotoSelectionController: UICollectionViewDelegate, UICollectionViewDa
                     guard let addImage = cell.imageView.image else {
                         return
                     }
-                    self?.viewModel.addSelectedItems(indexPath: indexPath, addItem: addImage)
+                    self?.viewModel.addSelectedPhoto(indexPath: indexPath, addPhotoes: addImage)
                 } else {
                     self?.viewModel.deleteDeselectedPhoto(indexPath: indexPath)
                 }
             })
             .disposed(by: disposeBag)
         
-        cell.imageView.image = viewModel.fetchedItems[indexPath.row]
+        cell.imageView.image = viewModel.fetchedPhotoes[indexPath.row]
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        ///if we select cell show that image on new view controller
-        print("selected: ", indexPath.row)
+        
+        guard let cell = photoCollectionView.cellForItem(at: indexPath) as? PhotoSelectionCell else {
+            return
+        }
+        
+        let photoRedactorVC = PhotoRedactorController()
+        photoRedactorVC.viewModel = PhotoRedactorViewModel(image: cell.imageView.image!)
+        photoRedactorVC.modalPresentationStyle = .fullScreen
+        photoRedactorVC.modalTransitionStyle = .crossDissolve
+        self.present(photoRedactorVC, animated: true)
+        
+        //self.navigationController?.pushViewController(photoRedactorVC, animated: true)
     }
 }
 
