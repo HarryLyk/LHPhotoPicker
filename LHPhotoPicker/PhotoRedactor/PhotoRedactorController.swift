@@ -15,17 +15,32 @@ class PhotoRedactorController: UIViewController {
         return String(describing: self)
     }
     
-    let imageView: UIImageView = {
-        return UIImageView()
+    let imageRedactorView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        return imageView
     }()
-    let redactorView: UIView = {
+    
+    let redactorControlsView: UIView = {
        return UIView()
     }()
+    
     let btnEdit: UIButton = {
-       return UIButton()
+        let button = UIButton()
+        button.setTitle("Edit", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 20)
+        button.titleLabel?.textAlignment = .center
+        return button
     }()
+    
     let btnCancel: UIButton = {
-        return UIButton()
+        let button = UIButton()
+        button.setTitle("Cancel", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 20)
+        button.titleLabel?.textAlignment = .center
+        return button
     }()
     
     var viewModel: PhotoRedactorViewModel!
@@ -34,10 +49,10 @@ class PhotoRedactorController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.addSubview(imageView)
-        view.addSubview(redactorView)
-        redactorView.addSubview(btnEdit)
-        redactorView.addSubview(btnCancel)
+        view.addSubview(imageRedactorView)
+        view.addSubview(redactorControlsView)
+        redactorControlsView.addSubview(btnEdit)
+        redactorControlsView.addSubview(btnCancel)
         
         setupLayout()
         setupRx()
@@ -58,48 +73,40 @@ class PhotoRedactorController: UIViewController {
     }
     
     private func setupLayout() {
-        imageView.image = viewModel.image
         
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
-        imageView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
-        imageView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        imageView.bottomAnchor.constraint(equalTo: redactorView.topAnchor, constant: -20).isActive = true
+        ///show only first image for now
+        imageRedactorView.image = viewModel.selectedPhotoes.values.first
         
-        redactorView.translatesAutoresizingMaskIntoConstraints = false
-        redactorView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
-        redactorView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
-        redactorView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        redactorView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        imageRedactorView.translatesAutoresizingMaskIntoConstraints = false
+        imageRedactorView.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
+        imageRedactorView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        imageRedactorView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        imageRedactorView.bottomAnchor.constraint(equalTo: redactorControlsView.topAnchor, constant: -20).isActive = true
+        
+        redactorControlsView.translatesAutoresizingMaskIntoConstraints = false
+        redactorControlsView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
+        redactorControlsView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        redactorControlsView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        redactorControlsView.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
 //        redactorView.layer.borderWidth = 1
 //        redactorView.layer.borderColor = UIColor.white.cgColor
         
-        setupRedactorViewItems()
+        setupRedactorControlLayout()
     }
     
-    private func setupRedactorViewItems() {
+    private func setupRedactorControlLayout() {
         btnEdit.translatesAutoresizingMaskIntoConstraints = false
-        btnEdit.topAnchor.constraint(equalTo: redactorView.topAnchor, constant: 5).isActive = true
-        btnEdit.rightAnchor.constraint(equalTo: redactorView.rightAnchor, constant: -20).isActive = true
+        btnEdit.topAnchor.constraint(equalTo: redactorControlsView.topAnchor, constant: 5).isActive = true
+        btnEdit.rightAnchor.constraint(equalTo: redactorControlsView.rightAnchor, constant: -20).isActive = true
         btnEdit.widthAnchor.constraint(equalToConstant: 70).isActive = true
         btnEdit.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
-        btnEdit.setTitle("Edit", for: .normal)
-        btnEdit.setTitleColor(.white, for: .normal)
-        btnEdit.titleLabel?.font = .systemFont(ofSize: 20)
-        btnEdit.titleLabel?.textAlignment = .center
-        
         btnCancel.translatesAutoresizingMaskIntoConstraints = false
-        btnCancel.topAnchor.constraint(equalTo: redactorView.topAnchor, constant: 5).isActive = true
-        btnCancel.leftAnchor.constraint(equalTo: redactorView.leftAnchor, constant: 20).isActive = true
+        btnCancel.topAnchor.constraint(equalTo: redactorControlsView.topAnchor, constant: 5).isActive = true
+        btnCancel.leftAnchor.constraint(equalTo: redactorControlsView.leftAnchor, constant: 20).isActive = true
         btnCancel.widthAnchor.constraint(equalToConstant: 70).isActive = true
         btnCancel.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        
-        btnCancel.setTitle("Cancel", for: .normal)
-        btnCancel.setTitleColor(.white, for: .normal)
-        btnCancel.titleLabel?.font = .systemFont(ofSize: 20)
-        btnCancel.titleLabel?.textAlignment = .center
         
     }
 }

@@ -30,18 +30,10 @@ class PhotoSelectionController: UIViewController {
 
         setupCollectionViewWithLayout()
         
-        viewModel.isLoading
-            .subscribe(onNext: {
-                flag in print("new flag value :", flag)
-                ///start or stop loading animation view
-            })
-            .disposed(by: disposeBag)
-        
         ///reload collection view if new cell count was set
         viewModel.newCellTotalCount
             .subscribe(onNext: {
                 [weak self] totalCellCount in
-                self?.viewModel.totalCellCount = totalCellCount
                 DispatchQueue.main.async {
                     self?.hideActivityIndicator(view: self!.photoCollectionView)
                     self?.photoCollectionView.reloadData()
@@ -61,7 +53,9 @@ class PhotoSelectionController: UIViewController {
                 DispatchQueue.main.async {
                     self.showActivityIndicator(view: self.view)
                 }
-                self.viewModel.loadMediaData(fetchMediaType: .image)
+                DispatchQueue.global(qos: .background).async {
+                    self.viewModel.loadAssets(fetchMediaType: .image)
+                }
                 return
             default:
                 self.showAccessRequest()
@@ -88,9 +82,6 @@ class PhotoSelectionController: UIViewController {
     
     /// If cancell was pressed show, no photo access view
     private func cancelPressed() {
-        //let noPhotoesView = UIView()
-        //noPhotoesView.layer.frame.width =
-        
     }
     
     private func showActivityIndicator(view: UIView) {
@@ -124,10 +115,11 @@ class PhotoSelectionController: UIViewController {
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         
-        ///setup cell size data
-        let collectionViewWidth = photoCollectionView.frame.width
+        ///get cell size data
+        let collectionViewWidth = view.frame.width
         let cellInRow = getCurrentOrientationCellCount()
         let cellSize = (collectionViewWidth - (viewModel.minimumInteritemSpacing * CGFloat(cellInRow - 1))) / CGFloat(cellInRow)
+        
         
         ///apply viewModel data to collection view
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -135,6 +127,7 @@ class PhotoSelectionController: UIViewController {
         layout.minimumLineSpacing = viewModel.minimumLineSpacing
         layout.itemSize = CGSize(width: cellSize, height: cellSize)
 
+        photoCollectionView.isPagingEnabled = false
         photoCollectionView.collectionViewLayout = layout
     }
     
@@ -160,10 +153,31 @@ extension PhotoSelectionController: UICollectionViewDelegate, UICollectionViewDa
         return viewModel.totalCellCount
     }
     
+    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        
+        photoCollectionView.collectionViewLayout.invalidateLayout()
+        
+        ///perform action when rotate happends
+//        guard let firstVisableCell = photoCollectionView.visibleCells.first else { return }
+//        guard let firstVisableItem =  photoCollectionView.indexPath(for: firstVisableCell)?.row else { return }
+//        let indexPath = IndexPath(item: firstVisableItem, section: 0)
+//
+//        DispatchQueue.main.async {
+//            self.photoCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+//        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = photoCollectionView.dequeueReusableCell(withReuseIdentifier: PhotoSelectionCell.reuseIdentifier, for: indexPath) as? PhotoSelectionCell else {
             return UICollectionViewCell()
         }
+
+        let cellSize = cell.frame.size.width
+        PHImageManager.default().requestImage(for: viewModel.assets.object(at: indexPath.row), targetSize: CGSize(width: cellSize, height: cellSize), contentMode: .aspectFill, options: nil, resultHandler: { (image, error) in
+            if image != nil {
+                cell.imageView.image = image
+            }
+        })
         
         cell.isPhotoSelected
             .subscribe(onNext: { [weak self] (isSelected) in
@@ -171,31 +185,34 @@ extension PhotoSelectionController: UICollectionViewDelegate, UICollectionViewDa
                     guard let addImage = cell.imageView.image else {
                         return
                     }
-                    self?.viewModel.addSelectedPhoto(indexPath: indexPath, addPhotoes: addImage)
+                    self?.viewModel.addSelectedPhoto(index: indexPath.row, addPhotoes: addImage)
+                    print("add selected photo with index: ", indexPath.row)
                 } else {
-                    self?.viewModel.deleteDeselectedPhoto(indexPath: indexPath)
+                    self?.viewModel.deleteDeselectedPhoto(index: indexPath.row)
                 }
             })
             .disposed(by: disposeBag)
         
-        cell.imageView.image = viewModel.fetchedPhotoes[indexPath.row]
-        
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        var cellSize: CGFloat
+        
+        let collectionViewWidth = photoCollectionView.frame.width
+        let cellInRow = getCurrentOrientationCellCount()
+        cellSize = (collectionViewWidth - (viewModel.minimumInteritemSpacing * CGFloat(cellInRow - 1))) / CGFloat(cellInRow)
+                
+        return CGSize(width: cellSize, height: cellSize)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        guard let cell = photoCollectionView.cellForItem(at: indexPath) as? PhotoSelectionCell else {
-            return
-        }
-        
-        let photoRedactorVC = PhotoRedactorController()
-        photoRedactorVC.viewModel = PhotoRedactorViewModel(image: cell.imageView.image!)
-        photoRedactorVC.modalPresentationStyle = .fullScreen
-        photoRedactorVC.modalTransitionStyle = .crossDissolve
-        self.present(photoRedactorVC, animated: true)
-        
-        //self.navigationController?.pushViewController(photoRedactorVC, animated: true)
+        guard let cell = photoCollectionView.cellForItem(at: indexPath) as? PhotoSelectionCell else { return }
+        guard let addImage = cell.imageView.image else { return }
+        self.viewModel.addSelectedPhoto(index: indexPath.row, addPhotoes: addImage)
+        self.viewModel.showSwiperController(sourceView: self)
     }
 }
 

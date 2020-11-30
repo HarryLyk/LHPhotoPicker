@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="DC4-Ht-xbO">
-                                <rect key="frame" x="0.0" y="49" width="414" height="763"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="778"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="AKX-mW-El2">
@@ -29,10 +29,10 @@
                                 <cells/>
                             </collectionView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mgU-02-2Kb">
-                                <rect key="frame" x="5" y="817" width="100" height="40"/>
+                                <rect key="frame" x="0.0" y="822" width="100" height="40"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="1j3-JC-Voe"/>
-                                    <constraint firstAttribute="width" constant="100" id="5BO-g3-fye"/>
+                                    <constraint firstAttribute="width" constant="100" id="Rh0-zS-Yde"/>
+                                    <constraint firstAttribute="height" constant="40" id="paA-Cm-08d"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="Cancel">
@@ -40,10 +40,10 @@
                                 </state>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kha-OV-r6B">
-                                <rect key="frame" x="309" y="817" width="100" height="40"/>
+                                <rect key="frame" x="314" y="822" width="100" height="40"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="100" id="As8-st-26t"/>
-                                    <constraint firstAttribute="height" constant="40" id="IjJ-4e-LjU"/>
+                                    <constraint firstAttribute="width" constant="100" id="Ne7-1Z-oxU"/>
+                                    <constraint firstAttribute="height" constant="40" id="O1B-X4-wHC"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="Select">
@@ -54,14 +54,14 @@
                         <viewLayoutGuide key="safeArea" id="xIf-cZ-DLl"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="mgU-02-2Kb" firstAttribute="leading" secondItem="xIf-cZ-DLl" secondAttribute="leading" id="3cT-MM-V0u"/>
                             <constraint firstItem="DC4-Ht-xbO" firstAttribute="leading" secondItem="xIf-cZ-DLl" secondAttribute="leading" id="6Su-Nc-bV4"/>
                             <constraint firstItem="xIf-cZ-DLl" firstAttribute="trailing" secondItem="DC4-Ht-xbO" secondAttribute="trailing" id="7ma-F1-qh6"/>
-                            <constraint firstItem="xIf-cZ-DLl" firstAttribute="trailing" secondItem="kha-OV-r6B" secondAttribute="trailing" constant="5" id="GPN-AE-aGR"/>
-                            <constraint firstItem="mgU-02-2Kb" firstAttribute="leading" secondItem="xIf-cZ-DLl" secondAttribute="leading" constant="5" id="JrU-XG-VRS"/>
-                            <constraint firstItem="xIf-cZ-DLl" firstAttribute="bottom" secondItem="kha-OV-r6B" secondAttribute="bottom" constant="5" id="LYK-Di-vdv"/>
-                            <constraint firstItem="DC4-Ht-xbO" firstAttribute="top" secondItem="xIf-cZ-DLl" secondAttribute="top" constant="5" id="bZ1-oB-i94"/>
-                            <constraint firstItem="xIf-cZ-DLl" firstAttribute="bottom" secondItem="mgU-02-2Kb" secondAttribute="bottom" constant="5" id="d5I-en-3ba"/>
-                            <constraint firstItem="mgU-02-2Kb" firstAttribute="top" secondItem="DC4-Ht-xbO" secondAttribute="bottom" constant="5" id="y0x-fA-6xz"/>
+                            <constraint firstItem="mgU-02-2Kb" firstAttribute="top" secondItem="DC4-Ht-xbO" secondAttribute="bottom" id="Xyr-cb-H4Z"/>
+                            <constraint firstItem="DC4-Ht-xbO" firstAttribute="top" secondItem="xIf-cZ-DLl" secondAttribute="top" id="dSL-P4-sAa"/>
+                            <constraint firstItem="xIf-cZ-DLl" firstAttribute="trailing" secondItem="kha-OV-r6B" secondAttribute="trailing" id="lWl-fc-eKG"/>
+                            <constraint firstItem="xIf-cZ-DLl" firstAttribute="bottom" secondItem="kha-OV-r6B" secondAttribute="bottom" id="n8R-DG-jw6"/>
+                            <constraint firstItem="xIf-cZ-DLl" firstAttribute="bottom" secondItem="mgU-02-2Kb" secondAttribute="bottom" id="xa2-LF-VIh"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="5I7-oQ-9UQ"/>

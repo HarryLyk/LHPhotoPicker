@@ -42,7 +42,7 @@ class PhotoSelectionCell: UICollectionViewCell {
         btnSelector.layer.backgroundColor = .none
         btnSelector.layer.borderWidth = 1
         btnSelector.layer.borderColor = UIColor.white.cgColor
-        btnSelector.layer.cornerRadius = 10
+        btnSelector.layer.cornerRadius = 12.5
     }
     
     override func prepareForReuse() {

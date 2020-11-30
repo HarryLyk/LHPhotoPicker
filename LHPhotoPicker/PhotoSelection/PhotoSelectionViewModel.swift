@@ -20,12 +20,11 @@ class PhotoSelectionViewModel {
     var minimumInteritemSpacing: CGFloat = 1
     var minimumLineSpacing: CGFloat = 1
     
-    var isLoading: BehaviorRelay<Bool> = .init(value: true)
     var isOrientationChanged: BehaviorRelay<Bool> = .init(value: true)
     var newCellTotalCount: PublishRelay<Int> = .init()
     
-    var fetchedPhotoes: [UIImage] = []
-    var selectedPhotoes: [IndexPath : UIImage] = [:]
+    var assets: PHFetchResult<PHAsset> = .init()
+    var selectedPhotoes: [Int : UIImage] = [:]
     
     private var disposeBag = DisposeBag()
     
@@ -43,34 +42,30 @@ class PhotoSelectionViewModel {
     }
     
     
-    ///load photoes from local storage and add them to
-    func loadMediaData(fetchMediaType: PHAssetMediaType) {
-            
-        let imageManager = PHImageManager.default()
+    ///load assets from photo manager and tells collection controller to reload it's data
+    func loadAssets(fetchMediaType: PHAssetMediaType) {
         let fetchOptions = PHFetchOptions()
-        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        let fetchResult = PHAsset.fetchAssets(with: fetchMediaType, options: fetchOptions)
-        let imageRequestOptions = PHImageRequestOptions()
-        imageRequestOptions.deliveryMode = .opportunistic
-        
-        if fetchResult.count > 0 {
-            for i in 0..<fetchResult.count {
-                imageManager.requestImage(for: fetchResult.object(at: i) as PHAsset, targetSize: CGSize(width: 500, height: 500), contentMode: .default, options: imageRequestOptions, resultHandler: { (image, error) in
-                    self.fetchedPhotoes.append(image!)
-                })
-            }
-        }
-        self.setTotalSetCount(totalCellCount: self.fetchedPhotoes.count)
-        
+        assets = PHAsset.fetchAssets(with: fetchMediaType, options: fetchOptions)
+
+        self.setTotalSetCount(totalCellCount: assets.count)
     }
     
-    
-    func addSelectedPhoto(indexPath: IndexPath, addPhotoes: UIImage) {
-        selectedPhotoes.updateValue(addPhotoes, forKey: indexPath)
+    func addSelectedPhoto(index: Int, addPhotoes: UIImage) {
+        selectedPhotoes.updateValue(addPhotoes, forKey: index)
     }
     
+    func deleteDeselectedPhoto(index: Int) {
+        selectedPhotoes.removeValue(forKey: index)
+    }
     
-    func deleteDeselectedPhoto(indexPath: IndexPath) {
-        selectedPhotoes.removeValue(forKey: indexPath)
+    func showSwiperController(sourceView: UIViewController) {
+        
+        let layout = UICollectionViewFlowLayout()
+        let swipeCollectionController = PhotoSwiperController(collectionViewLayout: layout)
+        let photoSwiperViewModel = PhotoSwiperViewModel(assets: self.assets)
+        photoSwiperViewModel.selectedPhotoes = selectedPhotoes
+        swipeCollectionController.viewModel = photoSwiperViewModel
+        swipeCollectionController.modalPresentationStyle = .fullScreen
+        sourceView.present(swipeCollectionController, animated: true)
     }
 }
