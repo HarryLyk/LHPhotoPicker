@@ -22,6 +22,7 @@ class PhotoSelectionViewModel {
     
     var isOrientationChanged: BehaviorRelay<Bool> = .init(value: true)
     var newCellTotalCount: PublishRelay<Int> = .init()
+    var updateSelectedCell: Bool = false
     
     var assets: PHFetchResult<PHAsset> = .init()
     var selectedPhotoes: [Int : UIImage] = [:]
@@ -45,6 +46,7 @@ class PhotoSelectionViewModel {
     ///load assets from photo manager and tells collection controller to reload it's data
     func loadAssets(fetchMediaType: PHAssetMediaType) {
         let fetchOptions = PHFetchOptions()
+        //fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         assets = PHAsset.fetchAssets(with: fetchMediaType, options: fetchOptions)
 
         self.setTotalSetCount(totalCellCount: assets.count)
@@ -58,14 +60,27 @@ class PhotoSelectionViewModel {
         selectedPhotoes.removeValue(forKey: index)
     }
     
-    func showSwiperController(sourceView: UIViewController) {
+    func showSwiperController(sourceView: UIViewController, scrollToIndex: Int) {
         
         let layout = UICollectionViewFlowLayout()
         let swipeCollectionController = PhotoSwiperController(collectionViewLayout: layout)
-        let photoSwiperViewModel = PhotoSwiperViewModel(assets: self.assets)
+        let photoSwiperViewModel = PhotoSwiperViewModel(assets: self.assets, scrollToIndex: scrollToIndex)
         photoSwiperViewModel.selectedPhotoes = selectedPhotoes
+        //photoSwiperViewModel.delegate = sourceView as? PhotoSwiperDelegate      /// protocol realization in PhotoSelectionController
+        photoSwiperViewModel.delegate = self
         swipeCollectionController.viewModel = photoSwiperViewModel
         swipeCollectionController.modalPresentationStyle = .fullScreen
         sourceView.present(swipeCollectionController, animated: true)
+    }
+}
+
+extension PhotoSelectionViewModel: PhotoSwiperDelegate {
+    func obtainSeectedPhotoes(selectedPhotoes: [Int : UIImage]) {
+        print("obtainSeectedPhotoes called with cells total: ", selectedPhotoes.count)
+        self.selectedPhotoes = selectedPhotoes
+        
+        //if self.selectedPhotoes == selectedPhotoes {
+            self.updateSelectedCell = true
+        //}
     }
 }

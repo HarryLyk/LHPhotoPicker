@@ -11,9 +11,9 @@ import RxSwift
 import RxCocoa
 
 class PhotoRedactorViewModel {
-    var selectedPhotoes: [IndexPath : UIImage]
+    var selectedPhoto: UIImage
     
-    init(selectedPhotoes: [IndexPath : UIImage]) {
-        self.selectedPhotoes = selectedPhotoes
+    init(selectedPhoto: UIImage) {
+        self.selectedPhoto = selectedPhoto
     }
 }

@@ -25,9 +25,9 @@ class PhotoRedactorController: UIViewController {
        return UIView()
     }()
     
-    let btnEdit: UIButton = {
+    let btnApply: UIButton = {
         let button = UIButton()
-        button.setTitle("Edit", for: .normal)
+        button.setTitle("Apply", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 20)
         button.titleLabel?.textAlignment = .center
@@ -51,7 +51,7 @@ class PhotoRedactorController: UIViewController {
         
         view.addSubview(imageRedactorView)
         view.addSubview(redactorControlsView)
-        redactorControlsView.addSubview(btnEdit)
+        redactorControlsView.addSubview(btnApply)
         redactorControlsView.addSubview(btnCancel)
         
         setupLayout()
@@ -59,7 +59,7 @@ class PhotoRedactorController: UIViewController {
     }
     
     private func setupRx() {
-        btnEdit.rx.tap
+        btnApply.rx.tap
             .subscribe(onNext: {
                 _ in
                 print("Edit was tapped")
@@ -75,7 +75,7 @@ class PhotoRedactorController: UIViewController {
     private func setupLayout() {
         
         ///show only first image for now
-        imageRedactorView.image = viewModel.selectedPhotoes.values.first
+        imageRedactorView.image = viewModel.selectedPhoto
         
         imageRedactorView.translatesAutoresizingMaskIntoConstraints = false
         imageRedactorView.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
@@ -96,11 +96,11 @@ class PhotoRedactorController: UIViewController {
     }
     
     private func setupRedactorControlLayout() {
-        btnEdit.translatesAutoresizingMaskIntoConstraints = false
-        btnEdit.topAnchor.constraint(equalTo: redactorControlsView.topAnchor, constant: 5).isActive = true
-        btnEdit.rightAnchor.constraint(equalTo: redactorControlsView.rightAnchor, constant: -20).isActive = true
-        btnEdit.widthAnchor.constraint(equalToConstant: 70).isActive = true
-        btnEdit.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        btnApply.translatesAutoresizingMaskIntoConstraints = false
+        btnApply.topAnchor.constraint(equalTo: redactorControlsView.topAnchor, constant: 5).isActive = true
+        btnApply.rightAnchor.constraint(equalTo: redactorControlsView.rightAnchor, constant: -20).isActive = true
+        btnApply.widthAnchor.constraint(equalToConstant: 70).isActive = true
+        btnApply.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         btnCancel.translatesAutoresizingMaskIntoConstraints = false
         btnCancel.topAnchor.constraint(equalTo: redactorControlsView.topAnchor, constant: 5).isActive = true

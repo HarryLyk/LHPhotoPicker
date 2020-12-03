@@ -25,11 +25,71 @@ class PhotoSelectionController: UIViewController {
     
     private var disposeBag = DisposeBag()
     
+    deinit {
+        print("PhotoSelectionController deinit was called")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if viewModel.updateSelectedCell == true {
+            print("viewWillApera update")
+            DispatchQueue.main.async {
+                self.photoCollectionView.reloadData()
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupCollectionViewWithLayout()
+        setupRx()
         
+        fetchPhotoIfPermited()
+    }
+    
+    
+    ///configure collection view according to set viewModel data
+    private func setupCollectionViewWithLayout() {
+        
+        photoCollectionView.dataSource = self
+        photoCollectionView.delegate = self
+        photoCollectionView.register(UINib(nibName: PhotoSelectionCell.reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: PhotoSelectionCell.reuseIdentifier)
+        
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        
+        ///get cell size data
+        let collectionViewWidth = view.frame.width
+        let cellInRow = getCurrentOrientationCellCount()
+        let cellSize = (collectionViewWidth - (viewModel.minimumInteritemSpacing * CGFloat(cellInRow - 1))) / CGFloat(cellInRow)
+        
+        
+        ///apply viewModel data to collection view
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.minimumInteritemSpacing = viewModel.minimumInteritemSpacing
+        layout.minimumLineSpacing = viewModel.minimumLineSpacing
+        layout.itemSize = CGSize(width: cellSize, height: cellSize)
+
+        photoCollectionView.isPagingEnabled = false
+        photoCollectionView.collectionViewLayout = layout
+    }
+    
+    
+    ///get cell count for different screen orientation if set
+    ///the default values are 3 cells in a row for portriant and 5 for landscape
+    private func getCurrentOrientationCellCount() -> CGFloat {
+        
+        switch UIDevice.current.orientation {
+        case .portrait, .portraitUpsideDown, .faceUp, .faceDown, .unknown:
+            return viewModel.cellInRowPortriant
+        case .landscapeLeft, .landscapeRight:
+            return viewModel.cellInRowLandscape
+        @unknown default:
+            return viewModel.cellInRowPortriant
+        }
+    }
+    
+    
+    private func setupRx() {
         ///reload collection view if new cell count was set
         viewModel.newCellTotalCount
             .subscribe(onNext: {
@@ -40,8 +100,6 @@ class PhotoSelectionController: UIViewController {
                 }
             })
             .disposed(by: disposeBag)
-        
-        fetchPhotoIfPermited()
     }
     
     
@@ -105,47 +163,6 @@ class PhotoSelectionController: UIViewController {
         activityIndicator = nil
     }
     
-    
-    ///configure collection view according to set viewModel data
-    private func setupCollectionViewWithLayout() {
-        
-        photoCollectionView.dataSource = self
-        photoCollectionView.delegate = self
-        photoCollectionView.register(UINib(nibName: PhotoSelectionCell.reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: PhotoSelectionCell.reuseIdentifier)
-        
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        
-        ///get cell size data
-        let collectionViewWidth = view.frame.width
-        let cellInRow = getCurrentOrientationCellCount()
-        let cellSize = (collectionViewWidth - (viewModel.minimumInteritemSpacing * CGFloat(cellInRow - 1))) / CGFloat(cellInRow)
-        
-        
-        ///apply viewModel data to collection view
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.minimumInteritemSpacing = viewModel.minimumInteritemSpacing
-        layout.minimumLineSpacing = viewModel.minimumLineSpacing
-        layout.itemSize = CGSize(width: cellSize, height: cellSize)
-
-        photoCollectionView.isPagingEnabled = false
-        photoCollectionView.collectionViewLayout = layout
-    }
-    
-    
-    ///get cell count for different screen orientation if set
-    ///the default values are 3 cells in a row for portriant and 5 for landscape
-    private func getCurrentOrientationCellCount() -> CGFloat {
-        
-        switch UIDevice.current.orientation {
-        case .portrait, .portraitUpsideDown, .faceUp, .faceDown, .unknown:
-            return viewModel.cellInRowPortriant
-        case .landscapeLeft, .landscapeRight:
-            return viewModel.cellInRowLandscape
-        @unknown default:
-            return viewModel.cellInRowPortriant
-        }
-    }
-    
 }
 
 extension PhotoSelectionController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -173,6 +190,7 @@ extension PhotoSelectionController: UICollectionViewDelegate, UICollectionViewDa
         }
 
         let cellSize = cell.frame.size.width
+        
         PHImageManager.default().requestImage(for: viewModel.assets.object(at: indexPath.row), targetSize: CGSize(width: cellSize, height: cellSize), contentMode: .aspectFill, options: nil, resultHandler: { (image, error) in
             if image != nil {
                 cell.imageView.image = image
@@ -186,12 +204,23 @@ extension PhotoSelectionController: UICollectionViewDelegate, UICollectionViewDa
                         return
                     }
                     self?.viewModel.addSelectedPhoto(index: indexPath.row, addPhotoes: addImage)
+                    cell.btnSelector.backgroundColor = .systemBlue
                     print("add selected photo with index: ", indexPath.row)
                 } else {
                     self?.viewModel.deleteDeselectedPhoto(index: indexPath.row)
+                    cell.btnSelector.backgroundColor = .none
                 }
             })
             .disposed(by: disposeBag)
+        
+        ///check selectedPhoto array when returned from swipe screen
+        if self.viewModel.selectedPhotoes[indexPath.row] != nil {
+            print("selected at:", indexPath.row)
+            cell.btnSelector.backgroundColor = .systemBlue
+        } else {
+            cell.btnSelector.backgroundColor = .none
+            print("deselected at:", indexPath.row)
+        }
         
         return cell
     }
@@ -212,7 +241,16 @@ extension PhotoSelectionController: UICollectionViewDelegate, UICollectionViewDa
         guard let cell = photoCollectionView.cellForItem(at: indexPath) as? PhotoSelectionCell else { return }
         guard let addImage = cell.imageView.image else { return }
         self.viewModel.addSelectedPhoto(index: indexPath.row, addPhotoes: addImage)
-        self.viewModel.showSwiperController(sourceView: self)
+        print("add from select number: ", indexPath.row)
+        self.viewModel.showSwiperController(sourceView: self, scrollToIndex: indexPath.row)
     }
 }
 
+//extension PhotoSelectionController: PhotoSwiperDelegate {
+//    func obtainSeectedPhotoes(selectedPhotoes: [Int : UIImage]) {
+//        print("obtainSeectedPhotoes from delegate was called: ", selectedPhotoes.count)
+//        DispatchQueue.main.async {
+//            self.photoCollectionView.reloadData()
+//        }
+//    }
+//}

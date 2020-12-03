@@ -9,7 +9,9 @@ import UIKit
 import RxCocoa
 import RxSwift
 
-
+//protocol PhotoSelectionCellDelegate {
+//    func getSelectedImage(selectedImage: UIImage)
+//}
 
 class PhotoSelectionCell: UICollectionViewCell {
     
@@ -23,6 +25,10 @@ class PhotoSelectionCell: UICollectionViewCell {
     
     static var reuseIdentifier: String {
         return String(describing: self)
+    }
+    
+    deinit {
+        print("deinit cell was called")
     }
     
     override func awakeFromNib() {
@@ -47,7 +53,7 @@ class PhotoSelectionCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        disposeBag = DisposeBag()
+        //disposeBag = DisposeBag()
     }
     
     private func setupRx() {
@@ -56,11 +62,11 @@ class PhotoSelectionCell: UICollectionViewCell {
                 [weak self] _ in
                 if self?.btnIsSelected == false {
                     self?.btnIsSelected = true
-                    self?.btnSelector.backgroundColor = .systemBlue
+                    //self?.btnSelector.backgroundColor = .systemBlue
                     self?.isPhotoSelected.accept(true)
                 } else {
                     self?.btnIsSelected = false
-                    self?.btnSelector.backgroundColor = .none
+                    //self?.btnSelector.backgroundColor = .none
                     self?.isPhotoSelected.accept(false)
                 }
             })

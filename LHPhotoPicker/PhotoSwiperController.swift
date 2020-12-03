@@ -7,10 +7,12 @@
 
 import UIKit
 import Photos
+import RxCocoa
+import RxSwift
 
 class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
-    let btnSelect: UIButton = {
+    private let btnSelectPhoto: UIButton = {
         let button = UIButton()
         button.layer.backgroundColor = .none
         button.layer.borderColor = UIColor.white.cgColor
@@ -19,10 +21,38 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         return button
     }()
     
+    private let btnCancel: UIButton = {
+       let button = UIButton()
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.white.cgColor
+        button.setTitle("Cancel", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
+        return button
+    }()
+    
+    private let btnApply: UIButton = {
+        let button = UIButton()
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.white.cgColor
+        button.setTitle("Apply", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
+        return button
+    }()
+    
+    private let btnEdit: UIButton = {
+        let button = UIButton()
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.white.cgColor
+        button.setTitle("Select", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
+        return button
+    }()
+    
     static var identifier: String {
         return String(describing: self)
     }
     var viewModel: PhotoSwiperViewModel!
+    private let disposeBag = DisposeBag()
     
     deinit {
         print("PhotoSwiperController deinit was called")
@@ -30,17 +60,47 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.addSubview(btnSelect)
-        setupButtonConstrains()
+        
+        view.addSubview(btnSelectPhoto)
+        view.addSubview(btnApply)
+        view.addSubview(btnCancel)
+        view.addSubview(btnEdit)
+        
         setupCollectionViewWithLayout()
+        setupButtonConstrains()
+        setupBtnRx()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        let scrollToIndexPath = IndexPath(item: viewModel.scrollToIndex, section: 0)
+        collectionView.scrollToItem(at: scrollToIndexPath, at: .left, animated: false)
     }
 
     private func setupButtonConstrains() {
-        btnSelect.translatesAutoresizingMaskIntoConstraints = false
-        btnSelect.heightAnchor.constraint(equalToConstant: 25).isActive = true
-        btnSelect.widthAnchor.constraint(equalToConstant: 25).isActive = true
-        btnSelect.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 60).isActive = true
-        btnSelect.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -5).isActive = true
+        btnSelectPhoto.translatesAutoresizingMaskIntoConstraints = false
+        btnSelectPhoto.heightAnchor.constraint(equalToConstant: 25).isActive = true
+        btnSelectPhoto.widthAnchor.constraint(equalToConstant: 25).isActive = true
+        btnSelectPhoto.topAnchor.constraint(equalTo: view.topAnchor, constant: 60).isActive = true
+        btnSelectPhoto.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -5).isActive = true
+        
+        btnApply.translatesAutoresizingMaskIntoConstraints = false
+        btnApply.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+        btnApply.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        btnApply.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        btnApply.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        btnCancel.translatesAutoresizingMaskIntoConstraints = false
+        btnCancel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        btnCancel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+        btnCancel.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        btnCancel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        btnEdit.translatesAutoresizingMaskIntoConstraints = false
+        btnEdit.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+        btnEdit.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        btnEdit.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        btnEdit.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
     }
     
     private func setupCollectionViewWithLayout(){
@@ -52,6 +112,56 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
             layout.minimumLineSpacing = 0
         }
     }
+    
+    private func setupBtnRx(){
+        
+        btnSelectPhoto.rx.tap
+            .subscribe(onNext:{
+                [weak self] _ in
+                ///if cell exists with photo - add photo to selectdPhoto and change select indicator
+                if let currentCell = self?.collectionView.visibleCells.first as? PhotoSwiperCell {
+                    if let index = self?.collectionView.indexPath(for: currentCell)?.row {
+                        if self?.viewModel.selectedPhotoes[index] != nil {
+                            self?.viewModel.deleteDeselectedPhoto(index: index)
+                            self?.btnSelectPhoto.backgroundColor = .none
+                            print("deselect number:", index)
+                        } else {
+                            if let image = currentCell.photoImageView.image {
+                                self?.viewModel.addSelectedPhoto(index: index, addPhotoes: image)
+                                self?.btnSelectPhoto.backgroundColor = .systemBlue
+                                print("select number:", index)
+                            }
+                        }
+                    }
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        btnCancel.rx.tap
+            .subscribe(onNext: {
+                [weak self] _ in
+                print("button cancel was tapped")
+                self?.dismiss(animated: true, completion: nil)
+            })
+            .disposed(by: disposeBag)
+        
+        btnEdit.rx.tap
+            .subscribe(onNext: {
+                [weak self] _ in
+                print("button edit was tapped")
+            })
+            .disposed(by: disposeBag)
+        
+        btnApply.rx.tap
+            .subscribe(onNext: {
+                [weak self] _ in
+                print("button apply tapped")
+                self?.viewModel.setSelectedPhotoOnApply(selectedPhotoes: self?.viewModel.selectedPhotoes ?? [:])
+                self?.dismiss(animated: true, completion: nil)
+            })
+            .disposed(by: disposeBag)
+    }
+    
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width, height: view.frame.height)
@@ -78,15 +188,12 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         }
         
         ///if any image with that key in dictionary - consider this photo is selected
-        if viewModel.selectedPhotoes[indexPath.row] != nil {
-            print("photo exists, number: ", indexPath.row)
-            btnSelect.backgroundColor = .systemBlue
+        if viewModel.selectedPhotoes[indexPath.item] != nil {
+            btnSelectPhoto.backgroundColor = .systemBlue
         } else {
-            btnSelect.backgroundColor = .none
-            print("photo doesn't exists, number :", indexPath.row)
+            btnSelectPhoto.backgroundColor = .none
         }
         
         return cell
     }
-
 }
