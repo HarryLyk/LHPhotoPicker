@@ -12,7 +12,7 @@ import RxSwift
 
 class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
-    private let btnSelectPhoto: UIButton = {
+    let btnSelectPhoto: UIButton = {
         let button = UIButton()
         button.layer.backgroundColor = .none
         button.layer.borderColor = UIColor.white.cgColor
@@ -21,32 +21,66 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         return button
     }()
     
-    private let btnCancel: UIButton = {
+    let btnCancel: UIButton = {
        let button = UIButton()
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.white.cgColor
         button.setTitle("Cancel", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.titleLabel?.textAlignment = .center
         return button
     }()
     
-    private let btnApply: UIButton = {
+    let btnCrop: UIButton = {
+        let button = UIButton()
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1
+        button.setTitle("Crop", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.titleLabel?.textAlignment = .center
+        return button
+    }()
+    
+    let btnApply: UIButton = {
         let button = UIButton()
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.white.cgColor
         button.setTitle("Apply", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.titleLabel?.textAlignment = .center
         return button
     }()
     
-    private let btnEdit: UIButton = {
+    ///Set buttons for edit mode
+    let btnCancelEdit: UIButton = {
         let button = UIButton()
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.white.cgColor
-        button.setTitle("Select", for: .normal)
+        button.setTitle("Back", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.titleLabel?.textAlignment = .center
+        button.isUserInteractionEnabled = false //it's hide at the beginning
         return button
     }()
+    
+    let btnApplyEdit: UIButton = {
+        let button = UIButton()
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.white.cgColor
+        button.setTitle("Ok", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.titleLabel?.textAlignment = .center
+        button.isUserInteractionEnabled = false
+        return button
+    }()
+
+    
+    var btnApplyBottomAnchor = NSLayoutConstraint()
+    var btnCancelBottonAnchor = NSLayoutConstraint()
+    var btnCropBottomAnchor = NSLayoutConstraint()
+    
+    var btnApplyEditBottomAnchor = NSLayoutConstraint()
+    var btnCancelEditBottomAnchor = NSLayoutConstraint()
     
     static var identifier: String {
         return String(describing: self)
@@ -62,12 +96,15 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         super.viewDidLoad()
         
         view.addSubview(btnSelectPhoto)
-        view.addSubview(btnApply)
-        view.addSubview(btnCancel)
-        view.addSubview(btnEdit)
+        addMainButtonsSubviews()
+        addCropButtonSubviews()
+        
+        setupSelectPhotoButtonConstraints()
+        setupMainButtonConstrains()
+        setupEditButtonConstrains()
         
         setupCollectionViewWithLayout()
-        setupButtonConstrains()
+        
         setupBtnRx()
     }
     
@@ -76,31 +113,15 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         collectionView.scrollToItem(at: scrollToIndexPath, at: .left, animated: false)
     }
 
-    private func setupButtonConstrains() {
-        btnSelectPhoto.translatesAutoresizingMaskIntoConstraints = false
-        btnSelectPhoto.heightAnchor.constraint(equalToConstant: 25).isActive = true
-        btnSelectPhoto.widthAnchor.constraint(equalToConstant: 25).isActive = true
-        btnSelectPhoto.topAnchor.constraint(equalTo: view.topAnchor, constant: 60).isActive = true
-        btnSelectPhoto.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -5).isActive = true
-        
-        btnApply.translatesAutoresizingMaskIntoConstraints = false
-        btnApply.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
-        btnApply.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-        btnApply.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        btnApply.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
-        btnCancel.translatesAutoresizingMaskIntoConstraints = false
-        btnCancel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        btnCancel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
-        btnCancel.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        btnCancel.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        
-        btnEdit.translatesAutoresizingMaskIntoConstraints = false
-        btnEdit.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
-        btnEdit.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        btnEdit.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        btnEdit.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
+    private func addMainButtonsSubviews() {
+        view.addSubview(btnApply)
+        view.addSubview(btnCancel)
+        view.addSubview(btnCrop)
+    }
+    
+    private func addCropButtonSubviews() {
+        view.addSubview(btnApplyEdit)
+        view.addSubview(btnCancelEdit)
     }
     
     private func setupCollectionViewWithLayout(){
@@ -145,19 +166,39 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
             })
             .disposed(by: disposeBag)
         
-        btnEdit.rx.tap
-            .subscribe(onNext: {
-                [weak self] _ in
-                print("button edit was tapped")
-            })
-            .disposed(by: disposeBag)
-        
         btnApply.rx.tap
             .subscribe(onNext: {
                 [weak self] _ in
                 print("button apply tapped")
                 self?.viewModel.setSelectedPhotoOnApply(selectedPhotoes: self?.viewModel.selectedPhotoes ?? [:])
                 self?.dismiss(animated: true, completion: nil)
+            })
+            .disposed(by: disposeBag)
+        
+        btnCancelEdit.rx.tap
+            .subscribe(onNext: {
+                [weak self] _ in
+                print("button cancel edit was tapped")
+                self?.showMainButtonsWithAnimation()
+            })
+            .disposed(by: disposeBag)
+        
+        btnApplyEdit.rx.tap
+            .subscribe(onNext: {
+                [weak self] _ in
+                print("apply edit was tapped")
+                self?.showMainButtonsWithAnimation()
+            })
+            .disposed(by: disposeBag)
+        
+        btnCrop.rx.tap
+            .subscribe(onNext: {
+                [weak self] _ in
+                print("button crop was tapped")
+                self?.showEditButtonsWithAnimation()
+                let currentCell = self?.collectionView.visibleCells.first as! PhotoSwiperCell
+                let cropRedactor = CropRedactor(baseImage: currentCell.photoImageView)
+                cropRedactor.initializeCropRedactor()
             })
             .disposed(by: disposeBag)
     }
@@ -197,3 +238,4 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         return cell
     }
 }
+
