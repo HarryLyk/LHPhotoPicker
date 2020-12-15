@@ -92,8 +92,9 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         print("PhotoSwiperController deinit was called")
     }
     
-    //current redactor controller
-    var redactor: RedactorFactory?
+    //crop redactor data
+    var cropRedactor: CropRedactor?
+    var cropInitialPoint = CGPoint()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -137,14 +138,8 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         }
     }
     
-//    @objc func tapHandler(_ sender: UITapGestureRecognizer){
-//        print("button select tapped")
-//    }
-    
+
     private func setupBtnRx(){
-        
-//        let selectGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapHandler(_:)))
-//        self.btnSelectPhoto.addGestureRecognizer(selectGestureRecognizer)
         btnSelectPhoto.rx.tap
             .subscribe(onNext:{
                 [weak self] _ in
@@ -154,12 +149,10 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
                         if self?.viewModel.selectedPhotoes[index] != nil {
                             self?.viewModel.deleteDeselectedPhoto(index: index)
                             self?.btnSelectPhoto.backgroundColor = .none
-                            print("deselect number:", index)
                         } else {
                             if let image = currentCell.photoImageView.image {
                                 self?.viewModel.addSelectedPhoto(index: index, addPhotoes: image)
                                 self?.btnSelectPhoto.backgroundColor = .systemBlue
-                                print("select number:", index)
                             }
                         }
                     }
@@ -178,7 +171,6 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         btnApply.rx.tap
             .subscribe(onNext: {
                 [weak self] _ in
-                print("button apply tapped")
                 self?.viewModel.setSelectedPhotoOnApply(selectedPhotoes: self?.viewModel.selectedPhotoes ?? [:])
                 self?.dismiss(animated: true, completion: nil)
             })
@@ -187,11 +179,11 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         btnCancelEdit.rx.tap
             .subscribe(onNext: {
                 [weak self] _ in
-                print("button cancel edit was tapped")
-                self?.collectionView.isUserInteractionEnabled = true
-                if self?.redactor != nil {
-                    self?.redactor?.cancelEdit()
+                if self?.cropRedactor != nil {
+                    self?.cropRedactor?.cancelEdit()
                 }
+                self?.collectionView.isUserInteractionEnabled = true
+                self?.btnSelectPhoto.isUserInteractionEnabled = true
                 self?.showMainButtonsWithAnimation()
             })
             .disposed(by: disposeBag)
@@ -199,12 +191,11 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         btnApplyEdit.rx.tap
             .subscribe(onNext: {
                 [weak self] _ in
-                print("apply edit was tapped")
-                self?.collectionView.isUserInteractionEnabled = true
-                if self?.redactor != nil {                    
-                    let _ = self?.redactor?.applyEdit()
-                    print("edited image was recieved")
+                if self?.cropRedactor != nil {
+                    self?.cropRedactor?.applyEdit()
                 }
+                self?.collectionView.isUserInteractionEnabled = true
+                self?.btnSelectPhoto.isUserInteractionEnabled = true
                 self?.showMainButtonsWithAnimation()
             })
             .disposed(by: disposeBag)
@@ -212,12 +203,21 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         btnCrop.rx.tap
             .subscribe(onNext: {
                 [weak self] _ in
-                print("button crop was tapped")
-                self?.collectionView.isUserInteractionEnabled = false
-                self?.showEditButtonsWithAnimation()
-                let currentCell = self?.collectionView.visibleCells.first as! PhotoSwiperCell
-                self?.redactor = RedactorFactory(sourceController: self!, baseImage: currentCell.photoImageView, redactorType: .crop)
                 
+                ///show crop buttons
+                self?.collectionView.isUserInteractionEnabled = false
+                self?.btnSelectPhoto.isUserInteractionEnabled = false
+                self?.showEditButtonsWithAnimation()
+                
+                ///draw crop rectangle
+                let currentCell = self?.collectionView.visibleCells.first as! PhotoSwiperCell
+                self?.cropRedactor = CropRedactor(baseImage: currentCell.photoImageView)
+                let cropRect = self?.cropRedactor?.drawCropRect()
+                self?.view.addSubview(cropRect!)
+                
+                ///add tap recognizer for crop rectangle
+                self?.cropRedactor?.panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(self?.cropPanHandler(_:)))
+                cropRect?.addGestureRecognizer((self?.cropRedactor?.panGestureRecognizer)!)
             })
             .disposed(by: disposeBag)
     }
@@ -258,3 +258,32 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
     }
 }
 
+extension PhotoSwiperController {
+    
+    @objc func cropPanHandler(_ gestureRecognizer: UIPanGestureRecognizer){
+        
+        print("cropPanHandler event")
+
+        guard gestureRecognizer.view != nil else { return }
+        let cropView = gestureRecognizer.view
+        ///get coordinates relative to superview
+        let translation = gestureRecognizer.translation(in: cropView?.superview)
+        
+        if gestureRecognizer.state == .began {
+            self.cropInitialPoint = cropView!.center
+            print("begun touch X position: ", cropView?.center.x)
+            print("begun touch Y position: ", cropView?.center.y)
+        }
+        
+        
+        ///end of touch
+        if gestureRecognizer.state == .ended {
+            let endXpoint = self.cropInitialPoint.x + translation.x
+            let endYpoint = self.cropInitialPoint.y + translation.y
+            print("endXpoint", endXpoint)
+            print("endYpoint", endYpoint)
+        }
+        
+    }
+}
+    

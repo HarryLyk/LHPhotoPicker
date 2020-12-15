@@ -7,56 +7,33 @@
 
 import UIKit
 
-class CropRedactor: UIView {
-    
-    var sourceController: UICollectionViewController!
+class CropRedactor {
     var baseImage: UIImageView!
     var editedImage: UIImageView?
+    var panGestureRecognizer: UIPanGestureRecognizer!
+    var tapGestureRecognizer: UITapGestureRecognizer!
     
-    var cropRectTapRecognizer: UITapGestureRecognizer!
-    
-    var cropRect: UIView = {
-        let cropView = UIView()
-        return cropView
-    }()
-    
-    
-    //var cropPan: UIPanGestureRecognizer?
-    
-//    var cropHeight = NSLayoutConstraint()
-//    var cropWidth = NSLayoutConstraint()
-//    @IBOutlet weak var height: NSLayoutConstraint!
+    var cropRect: UIView!
     
     deinit {
         print("CropRedactor deinit was called")
     }
     
-    init(sourceController: UICollectionViewController, baseImage: UIImageView) {
-        super.init(frame: baseImage.frame)
-        
-        self.sourceController = sourceController
+    init(baseImage: UIImageView) {
         self.baseImage = baseImage
-        self.cropRect.isUserInteractionEnabled = true
-        
-        drawCropRect()
-        
-        //add gesture recognizer to crop rect
-        addCropGestureRecognizer()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     ///draw a rectangle sized by basePhoto
-    private func drawCropRect(){
-        let scale: CGFloat
+    func drawCropRect() -> UIView{
+        var scale: CGFloat = 1
         
         ///get scale factor witch describes how the image was changed to fit the UIViewImage borders
-        if baseImage.image!.size.width > baseImage.image!.size.height {
-            scale = baseImage.bounds.width / baseImage.image!.size.width
+        let widthScale = baseImage.bounds.width / baseImage.image!.size.width
+        let heightscale = baseImage.bounds.height / baseImage.image!.size.height
+        if widthScale > heightscale {
+            scale = heightscale
         } else {
-            scale = baseImage.bounds.height / baseImage.image!.size.height
+            scale = widthScale
         }
         
         ///calculate size of scaled image by using calculated scale factor
@@ -66,36 +43,19 @@ class CropRedactor: UIView {
         
         cropRect = UIView(frame: CGRect(x: positionX, y: positionY, width: imageSize.width, height: imageSize.height))
         cropRect.layer.borderWidth = 1
-        cropRect.layer.borderColor = UIColor.red.cgColor
+        cropRect.layer.borderColor = UIColor.white.cgColor
+        cropRect.isUserInteractionEnabled = true
         
-        baseImage.addSubview(cropRect)
+        return cropRect
+        //baseImage.addSubview(cropRect)
     }
     
-    @objc func tapHandler(_ sender: UITapGestureRecognizer? = nil) {
-        print("tap was called")
-    }
-    
-    @objc func resizeCropRect(pan: UIPanGestureRecognizer) {
-        print("pan was called")
-        print("pan recognizer work : ", pan.translation(in: self.baseImage))
-    }
-    
-    private func addCropGestureRecognizer() {
-//        let cropPan = UIPanGestureRecognizer(target: sourceController, action: #selector(resizeCropRect(pan:)))
-        cropRectTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapHandler(_:)))
-        self.cropRect.addGestureRecognizer(cropRectTapRecognizer)
-//        self.cropRect.addGestureRecognizer(tapRec)
-    }
-    
-    func applyEdit() -> UIImageView? {
-        print("CropRedactor apply edit")
+    func applyEdit() {
         cropRect.removeFromSuperview()
-        return editedImage
     }
     
     func cancelEdit() {
         cropRect.removeFromSuperview()
-        print("CropRedactor cancel edit")
     }
 }
 

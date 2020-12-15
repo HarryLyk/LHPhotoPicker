@@ -34,7 +34,7 @@ class PhotoSwiperCell: UICollectionViewCell {
     
     private func setupLayout(){
         ///setup photo image view constraints
-        photoImageView.topAnchor.constraint(equalTo: topAnchor, constant: 60).isActive = true
+        photoImageView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
         photoImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -60).isActive = true
         photoImageView.leftAnchor.constraint(equalTo: leftAnchor, constant: 0).isActive = true
         photoImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: 0).isActive = true

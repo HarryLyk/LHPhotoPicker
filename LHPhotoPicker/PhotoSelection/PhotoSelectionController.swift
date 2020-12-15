@@ -215,11 +215,9 @@ extension PhotoSelectionController: UICollectionViewDelegate, UICollectionViewDa
         
         ///check selectedPhoto array when returned from swipe screen
         if self.viewModel.selectedPhotoes[indexPath.row] != nil {
-            print("selected at:", indexPath.row)
             cell.btnSelector.backgroundColor = .systemBlue
         } else {
             cell.btnSelector.backgroundColor = .none
-            print("deselected at:", indexPath.row)
         }
         
         return cell
