@@ -92,6 +92,9 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         print("PhotoSwiperController deinit was called")
     }
     
+    //current redactor controller
+    var redactor: RedactorFactory?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -134,8 +137,14 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         }
     }
     
+//    @objc func tapHandler(_ sender: UITapGestureRecognizer){
+//        print("button select tapped")
+//    }
+    
     private func setupBtnRx(){
         
+//        let selectGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapHandler(_:)))
+//        self.btnSelectPhoto.addGestureRecognizer(selectGestureRecognizer)
         btnSelectPhoto.rx.tap
             .subscribe(onNext:{
                 [weak self] _ in
@@ -157,7 +166,7 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
                 }
             })
             .disposed(by: disposeBag)
-        
+
         btnCancel.rx.tap
             .subscribe(onNext: {
                 [weak self] _ in
@@ -179,6 +188,10 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
             .subscribe(onNext: {
                 [weak self] _ in
                 print("button cancel edit was tapped")
+                self?.collectionView.isUserInteractionEnabled = true
+                if self?.redactor != nil {
+                    self?.redactor?.cancelEdit()
+                }
                 self?.showMainButtonsWithAnimation()
             })
             .disposed(by: disposeBag)
@@ -187,6 +200,11 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
             .subscribe(onNext: {
                 [weak self] _ in
                 print("apply edit was tapped")
+                self?.collectionView.isUserInteractionEnabled = true
+                if self?.redactor != nil {                    
+                    let _ = self?.redactor?.applyEdit()
+                    print("edited image was recieved")
+                }
                 self?.showMainButtonsWithAnimation()
             })
             .disposed(by: disposeBag)
@@ -195,10 +213,11 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
             .subscribe(onNext: {
                 [weak self] _ in
                 print("button crop was tapped")
+                self?.collectionView.isUserInteractionEnabled = false
                 self?.showEditButtonsWithAnimation()
                 let currentCell = self?.collectionView.visibleCells.first as! PhotoSwiperCell
-                let cropRedactor = CropRedactor(baseImage: currentCell.photoImageView)
-                cropRedactor.initializeCropRedactor()
+                self?.redactor = RedactorFactory(sourceController: self!, baseImage: currentCell.photoImageView, redactorType: .crop)
+                
             })
             .disposed(by: disposeBag)
     }
