@@ -95,6 +95,7 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
     //crop redactor data
     var cropRedactor: CropRedactor?
     var cropInitialPoint = CGPoint()
+    var cropInitialRect = CGRect()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -261,20 +262,43 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
 extension PhotoSwiperController {
     
     @objc func cropPanHandler(_ gestureRecognizer: UIPanGestureRecognizer){
-        
-        print("cropPanHandler event")
-
         guard gestureRecognizer.view != nil else { return }
         let cropView = gestureRecognizer.view
+        
         ///get coordinates relative to superview
         let translation = gestureRecognizer.translation(in: cropView?.superview)
         
         if gestureRecognizer.state == .began {
-            self.cropInitialPoint = cropView!.center
-            print("begun touch X position: ", cropView?.center.x)
-            print("begun touch Y position: ", cropView?.center.y)
+            if cropView?.frame.origin != nil {
+                self.cropInitialPoint = (cropView?.frame.origin)!
+            }
+            if self.cropRedactor != nil {
+                self.cropInitialRect = (self.cropRedactor?.cropRect.frame)!
+            }
+            
+            print("begun touch X position: ", translation.x)
+            print("begun touch Y position: ", translation.y)
+            
+//            print("top left x:", cropView?.frame.minX)
+//            print("top left y:", cropView?.frame.minY)
+//            print("top right x:",cropView?.frame.maxX)
+//            print("top right y:",cropView?.frame.minY)
+//            print("bottom left x:",cropView?.frame.minX)
+//            print("bottom left y:",cropView?.frame.maxY)
+//            print("bottom right x:",cropView?.frame.maxX)
+//            print("bottom right y",cropView?.frame.maxY)
         }
         
+        if gestureRecognizer.state == .changed {
+            print("changed stat : X: \(translation.x)  Y:\(translation.y)")
+            print("new width : ", self.cropInitialRect.width - ( translation.x))
+            print("new height: ", self.cropInitialRect.height)
+            cropView?.frame = CGRect(x: self.cropInitialPoint.x + translation.x,
+                                     y: self.cropInitialPoint.y + translation.y,
+                                     width: self.cropInitialRect.width - translation.x,
+                                     height: self.cropInitialRect.height - translation.y)
+
+        }
         
         ///end of touch
         if gestureRecognizer.state == .ended {
@@ -283,7 +307,6 @@ extension PhotoSwiperController {
             print("endXpoint", endXpoint)
             print("endYpoint", endYpoint)
         }
-        
     }
 }
     

@@ -26,10 +26,10 @@ class CropRedactor {
     ///draw a rectangle sized by basePhoto
     func drawCropRect() -> UIView{
         var scale: CGFloat = 1
-        
+
         ///get scale factor witch describes how the image was changed to fit the UIViewImage borders
-        let widthScale = baseImage.bounds.width / baseImage.image!.size.width
-        let heightscale = baseImage.bounds.height / baseImage.image!.size.height
+        let widthScale = baseImage.bounds.width / (baseImage.image?.size.width ?? 1)
+        let heightscale = baseImage.bounds.height / (baseImage.image?.size.height ?? 1)
         if widthScale > heightscale {
             scale = heightscale
         } else {
@@ -37,7 +37,7 @@ class CropRedactor {
         }
         
         ///calculate size of scaled image by using calculated scale factor
-        let imageSize = CGSize(width: baseImage.image!.size.width * scale, height: baseImage.image!.size.height * scale)
+        let imageSize = CGSize(width: ((baseImage.image?.size.width) ?? 1) * scale, height: ((baseImage.image?.size.height) ?? 1) * scale)
         let positionX = (baseImage.bounds.width - imageSize.width) / 2.0
         let positionY = (baseImage.bounds.height - imageSize.height) / 2.0
         
