@@ -96,6 +96,7 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
     var cropRedactor: CropRedactor?
     var cropInitialPoint = CGPoint()
     var cropInitialRect = CGRect()
+    var touchPositionType: TouchPosition = .badPosition
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -269,30 +270,92 @@ extension PhotoSwiperController {
         let translation = gestureRecognizer.translation(in: cropView?.superview)
         
         if gestureRecognizer.state == .began {
+            ///get start point position relative to cropView, not superview
+            let touchPoint = gestureRecognizer.location(in: cropView)
+            
+            ///get initial point of cropView to draw crop rectangle when it changes
             if cropView?.frame.origin != nil {
                 self.cropInitialPoint = (cropView?.frame.origin)!
             }
+            ///get initial frame of cropRect frame to count it's changes from it
             if self.cropRedactor != nil {
                 self.cropInitialRect = (self.cropRedactor?.cropRect.frame)!
             }
             
-            print("begun touch X position: ", translation.x)
-            print("begun touch Y position: ", translation.y)
+            ///get part of cropRect according to touch position
+            let touchScaleFactor:CGFloat = 0.15 //this value shouldn't be greather then 0.25
+            let minLen = { () -> CGFloat in
+                if self.cropInitialRect.width < self.cropInitialRect.height {
+                    return self.cropInitialRect.width * touchScaleFactor
+                } else {
+                    return self.cropInitialRect.height * touchScaleFactor
+                }
+            }()
             
-//            print("top left x:", cropView?.frame.minX)
-//            print("top left y:", cropView?.frame.minY)
-//            print("top right x:",cropView?.frame.maxX)
-//            print("top right y:",cropView?.frame.minY)
-//            print("bottom left x:",cropView?.frame.minX)
-//            print("bottom left y:",cropView?.frame.maxY)
-//            print("bottom right x:",cropView?.frame.maxX)
-//            print("bottom right y",cropView?.frame.maxY)
+            ///center points of X and Y of crop rectangle
+            let centerX = self.cropInitialRect.width / 2
+            let centerY = self.cropInitialRect.height / 2
+            let maxX = self.cropInitialRect.width
+            let maxY = self.cropInitialRect.height
+            
+            ///count touch point type (TouchPosition)
+            if (touchPoint.x < minLen) {
+                ///handle left side
+                if (touchPoint.y < minLen) {
+                    self.touchPositionType = .topLeft
+                } else if ((touchPoint.y > (centerY - minLen)) && (touchPoint.y < (centerY + minLen))) {
+                    self.touchPositionType = .leftBorder
+                } else if ( (maxY - minLen) < touchPoint.y) {
+                    self.touchPositionType = .bottomLeft
+                }
+            } else if ((maxX - minLen) < touchPoint.x) {
+                ///handle right side
+                if (touchPoint.y < minLen) {
+                    self.touchPositionType = .topRight
+                } else if (((centerY - minLen) < touchPoint.y) && (touchPoint.y < (centerY + minLen))) {
+                    self.touchPositionType = .rightBorder
+                } else if ((maxY - minLen) < touchPoint.y) {
+                    self.touchPositionType = .bottomRight
+                }
+            } else if ( (touchPoint.x > (centerX - minLen)) && (touchPoint.x < (centerX + minLen))) {
+                ///handle top and bottom borders
+                if (touchPoint.y < minLen) {
+                    self.touchPositionType = .topBorder
+                } else if ( touchPoint.y > (maxY - minLen)) {
+                    self.touchPositionType = .bottomBorder
+                }
+            } else {
+                self.touchPositionType = .badPosition
+            }
         }
         
         if gestureRecognizer.state == .changed {
-            print("changed stat : X: \(translation.x)  Y:\(translation.y)")
-            print("new width : ", self.cropInitialRect.width - ( translation.x))
-            print("new height: ", self.cropInitialRect.height)
+            
+//            print("changed stat : X: \(translation.x)  Y:\(translation.y)")
+//            print("new width : ", self.cropInitialRect.width - (translation.x))
+//            print("new height: ", self.cropInitialRect.height - (translation.y))
+            
+            switch self.touchPositionType {
+            case .bottomBorder:
+                print("bottomBorder")
+            case .bottomLeft:
+                print("bottomLeft")
+            case .bottomRight:
+                print("bottomRight")
+            case .leftBorder:
+                print("leftBorder")
+            case .rightBorder:
+                print("rightBorder")
+            case .topBorder:
+                print("topBorder")
+            case .topLeft:
+                print("topLeft")
+            case .topRight:
+                print("topRight")
+            case .badPosition:
+                print("badPosition")
+            }
+            
             cropView?.frame = CGRect(x: self.cropInitialPoint.x + translation.x,
                                      y: self.cropInitialPoint.y + translation.y,
                                      width: self.cropInitialRect.width - translation.x,

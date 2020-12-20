@@ -7,6 +7,19 @@
 
 import UIKit
 
+//Start position type when pan touch began
+enum TouchPosition {
+    case topLeft
+    case topBorder
+    case topRight
+    case rightBorder
+    case bottomRight
+    case bottomBorder
+    case bottomLeft
+    case leftBorder
+    case badPosition    /// if touches to far from rect corners or borders
+}
+
 class CropRedactor {
     var baseImage: UIImageView!
     var editedImage: UIImageView?
