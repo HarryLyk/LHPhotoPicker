@@ -17,16 +17,18 @@ enum TouchPosition {
     case bottomBorder
     case bottomLeft
     case leftBorder
+    case centerPosition
     case badPosition    /// if touches to far from rect corners or borders
 }
 
 class CropRedactor {
     var baseImage: UIImageView!
-    var editedImage: UIImageView?
+    var editedImage: UIImage?
     var panGestureRecognizer: UIPanGestureRecognizer!
     var tapGestureRecognizer: UITapGestureRecognizer!
     
     var cropRect: UIView!
+    var baseCropRect: CGRect!
     
     deinit {
         print("CropRedactor deinit was called")
@@ -37,7 +39,7 @@ class CropRedactor {
     }
     
     ///draw a rectangle sized by basePhoto
-    func drawCropRect() -> UIView{
+    func drawCropRect() -> UIView {
         var scale: CGFloat = 1
 
         ///get scale factor witch describes how the image was changed to fit the UIViewImage borders
@@ -58,16 +60,19 @@ class CropRedactor {
         cropRect.layer.borderWidth = 1
         cropRect.layer.borderColor = UIColor.white.cgColor
         cropRect.isUserInteractionEnabled = true
+        baseCropRect = cropRect.frame   ///seve base crop rectangle data for pan gesture recognizer
         
         return cropRect
         //baseImage.addSubview(cropRect)
     }
     
     func applyEdit() {
+        editedImage = nil
         cropRect.removeFromSuperview()
     }
     
     func cancelEdit() {
+        editedImage = nil
         cropRect.removeFromSuperview()
     }
 }

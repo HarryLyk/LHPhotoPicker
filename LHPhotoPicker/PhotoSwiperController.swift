@@ -194,6 +194,11 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
             .subscribe(onNext: {
                 [weak self] _ in
                 if self?.cropRedactor != nil {
+                    ///save cropped picture
+                    let currentCell = self?.collectionView.visibleCells.first as! PhotoSwiperCell
+                    currentCell.photoImageView.image = self?.cropRedactor?.editedImage
+                    //let updIndexPath:[IndexPath] = [(self?.collectionView.indexPath(for: currentCell))!]
+                    //self?.collectionView.reloadItems(at: updIndexPath)
                     self?.cropRedactor?.applyEdit()
                 }
                 self?.collectionView.isUserInteractionEnabled = true
@@ -283,6 +288,7 @@ extension PhotoSwiperController {
             }
             
             ///get part of cropRect according to touch position
+            ///minLen - minimum distance from touch point to handle
             let touchScaleFactor:CGFloat = 0.15 //this value shouldn't be greather then 0.25
             let minLen = { () -> CGFloat in
                 if self.cropInitialRect.width < self.cropInitialRect.height {
@@ -317,12 +323,15 @@ extension PhotoSwiperController {
                 } else if ((maxY - minLen) < touchPoint.y) {
                     self.touchPositionType = .bottomRight
                 }
-            } else if ( (touchPoint.x > (centerX - minLen)) && (touchPoint.x < (centerX + minLen))) {
+            } else if ( ((centerX - minLen) < touchPoint.x) && (touchPoint.x < (centerX + minLen))) {
                 ///handle top and bottom borders
                 if (touchPoint.y < minLen) {
                     self.touchPositionType = .topBorder
                 } else if ( touchPoint.y > (maxY - minLen)) {
                     self.touchPositionType = .bottomBorder
+                } else if (((centerY - minLen) < touchPoint.y) && (touchPoint.y < (centerY + minLen))) {
+                    ///handle center touch
+                    self.touchPositionType = .centerPosition
                 }
             } else {
                 self.touchPositionType = .badPosition
@@ -331,35 +340,106 @@ extension PhotoSwiperController {
         
         if gestureRecognizer.state == .changed {
             
-//            print("changed stat : X: \(translation.x)  Y:\(translation.y)")
-//            print("new width : ", self.cropInitialRect.width - (translation.x))
-//            print("new height: ", self.cropInitialRect.height - (translation.y))
+            ///get data about very first crop rectangle frame
+            guard let originFrame = self.cropRedactor?.baseCropRect else { return }
+            let originX = originFrame.origin.x
+            let originY = originFrame.origin.y
+            let originWidth = originFrame.width
+            let originHeight = originFrame.height
             
+            ///Set data when current pan recognizer works
+            ///Note: when touches crop rectangle after changes, cropInitialRect will become diferent from previous pan gesture
+            let curWidth = self.cropInitialRect.width
+            let curHeigh = self.cropInitialRect.height
+            let minX = self.cropInitialPoint.x
+            let minY = self.cropInitialPoint.y
+            let maxX = minX + curWidth
+            let maxY = minY + curHeigh
+                
+            print("originX: ", originX)
+            print("originY: ", originY)
+            print("minX: ", minX)
+            print("minY: ", minY)
+            print("maxX: ", maxX)
+            print("maxY: ", maxY)
+            print("cropWidth: ", curWidth)
+            print("cropHeigh: ", curHeigh)
+            print("translation.x : ", translation.x)
+            print("translation.y : ", translation.y)
+            
+            ///count crop rectangle border movement
+            ///Note: make separate functions for border check?
             switch self.touchPositionType {
-            case .bottomBorder:
-                print("bottomBorder")
-            case .bottomLeft:
-                print("bottomLeft")
-            case .bottomRight:
-                print("bottomRight")
-            case .leftBorder:
-                print("leftBorder")
-            case .rightBorder:
-                print("rightBorder")
-            case .topBorder:
-                print("topBorder")
             case .topLeft:
-                print("topLeft")
+                if ((minX + translation.x) < originX) && ((minY + translation.y) < originY) {
+                    cropView?.frame = CGRect(x: originX, y: originY, width: minX + maxX, height: (minY - originY) + curHeigh)
+                } else if (minX + translation.x) < originX {
+                    cropView?.frame = CGRect(x: originX, y: minY + translation.y, width: curWidth + minX, height: curHeigh - translation.y)
+                } else if (minY + translation.y) < originY {
+                    cropView?.frame = CGRect(x: minX + translation.x, y: originY, width: curWidth - translation.x, height: (minY - originY) + curHeigh)
+                } else {
+                    cropView?.frame = CGRect(x: minX + translation.x, y: minY + translation.y, width: curWidth - translation.x, height: curHeigh - translation.y)
+                }
+            case .topBorder:
+                if (minY + translation.y) < originY {
+                    cropView?.frame = CGRect(x: minX, y: originY, width: curWidth, height: (minY - originY) + curHeigh)
+                } else {
+                    cropView?.frame = CGRect(x: minX, y: minY + translation.y, width: curWidth, height: curHeigh - translation.y)
+                }
             case .topRight:
-                print("topRight")
+                if ((minY + translation.y) < originY) && ((maxX + translation.x) > originWidth) {
+                    cropView?.frame = CGRect(x: minX, y: originY, width: originWidth - minX, height: (minY - originY) + curHeigh)
+                } else if (maxX + translation.x) > originWidth {
+                    cropView?.frame = CGRect(x: originX, y: minY + translation.y, width: originWidth, height: curHeigh - translation.y)
+                } else if (minY + translation.y) < originY {
+                    cropView?.frame = CGRect(x: minX, y: originY, width: curWidth + translation.x, height: originHeight)
+                } else {
+                    cropView?.frame = CGRect(x: minX, y: minY + translation.y, width: curWidth + translation.x, height: curHeigh - translation.y)
+                }
+            case .rightBorder:
+                if maxX + translation.x > originWidth {
+                    cropView?.frame = CGRect(x: minX, y: minY, width: originWidth - minX, height: curHeigh)
+                } else {
+                    cropView?.frame = CGRect(x: minX, y: minY, width: curWidth + translation.x, height: curHeigh)
+                }
+            case .bottomRight:
+                if (maxX + translation.x > originWidth) && (maxY + translation.y > originY + originHeight) {
+                    cropView?.frame = CGRect(x: minX, y: minY, width: originWidth - minX, height: (originY + originHeight) - minY)
+                } else if (maxX + translation.x > originWidth) {
+                    cropView?.frame = CGRect(x: minX, y: minY, width: originWidth - minX, height: curHeigh + translation.y)
+                } else if (maxY + translation.y > originY + originHeight) {
+                    cropView?.frame = CGRect(x: minX, y: minY, width: curWidth + translation.x, height: (originY + originHeight) - minY)
+                } else {
+                    cropView?.frame = CGRect(x: minX, y: minY, width: curWidth + translation.x, height: curHeigh + translation.y)
+                }
+            case .bottomBorder:
+                if maxY + translation.y > originY + originHeight {
+                    cropView?.frame = CGRect(x: minX, y: minY, width: curWidth, height: (originY + originHeight) - minY)
+                } else {
+                    cropView?.frame = CGRect(x: minX, y: minY, width: curWidth, height: curHeigh + translation.y)
+                }
+            case .bottomLeft:
+                if (minX + translation.x < originX) && (maxY + translation.y > originY + originHeight) {
+                    cropView?.frame = CGRect(x: originX, y: minY, width: curWidth + minX, height: (originY + originHeight) - minY)
+                } else if (minX + translation.x < originX) {
+                    cropView?.frame = CGRect(x: originX, y: minY, width: curWidth + minX, height: curHeigh + translation.y)
+                } else if (maxY + translation.y > originY + originHeight) {
+                    cropView?.frame = CGRect(x: minX + translation.x, y: minY, width: curWidth - translation.x, height: (originY + originHeight) - minY)
+                } else {
+                    cropView?.frame = CGRect(x: minX + translation.x, y: minY, width: curWidth - translation.x, height: curHeigh + translation.y)
+                }
+            case .leftBorder:
+                if minX + translation.x < originX {
+                    cropView?.frame = CGRect(x: originX, y: minY, width: curWidth + minX, height: curHeigh)
+                } else {
+                    cropView?.frame = CGRect(x: minX + translation.x, y: minY, width: curWidth - translation.x, height: curHeigh)
+                }
+            case .centerPosition:
+                print("Center position")
+                
             case .badPosition:
                 print("badPosition")
             }
-            
-            cropView?.frame = CGRect(x: self.cropInitialPoint.x + translation.x,
-                                     y: self.cropInitialPoint.y + translation.y,
-                                     width: self.cropInitialRect.width - translation.x,
-                                     height: self.cropInitialRect.height - translation.y)
 
         }
         
@@ -369,6 +449,14 @@ extension PhotoSwiperController {
             let endYpoint = self.cropInitialPoint.y + translation.y
             print("endXpoint", endXpoint)
             print("endYpoint", endYpoint)
+            
+            if cropView == nil { return }
+            guard let cutImageRef: CGImage = cropRedactor?.baseImage.image?.cgImage?.cropping(to: cropView!.frame)
+            else {
+                print("error crop image")
+                return
+            }
+            cropRedactor?.editedImage = UIImage(cgImage: cutImageRef)
         }
     }
 }
