@@ -16,7 +16,7 @@ class PhotoSelectionController: UIViewController {
     @IBOutlet weak var btnCancel: UIButton!
     @IBOutlet weak var btnSelect: UIButton!
     
-    static var identificator: String {
+    static var identifier: String {
         return String(describing: self)
     }
     

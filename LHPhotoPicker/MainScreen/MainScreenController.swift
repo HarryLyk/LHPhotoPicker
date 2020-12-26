@@ -52,7 +52,7 @@ class MainScreenController: UIViewController {
     
     func showPhotoSelectioScreen() {
         let storyboard = UIStoryboard(name: "PhotoSelectionController", bundle: nil)
-        let photoSelectionVC = storyboard.instantiateViewController(identifier: PhotoSelectionController.identificator) as! PhotoSelectionController
+        let photoSelectionVC = storyboard.instantiateViewController(identifier: PhotoSelectionController.identifier) as! PhotoSelectionController
         
         photoSelectionVC.viewModel = setPhotoSelectionViewModel()
         photoSelectionVC.viewModel.cellInRowPortriant = 3

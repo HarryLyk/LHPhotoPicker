@@ -220,20 +220,24 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
             .subscribe(onNext: {
                 [weak self] _ in
                 
-                ///show crop buttons
-                self?.collectionView.isUserInteractionEnabled = false
-                self?.btnSelectPhoto.isUserInteractionEnabled = false
-                self?.showEditButtonsWithAnimation()
-                
-                ///draw crop rectangle
                 let currentCell = self?.collectionView.visibleCells.first as! PhotoSwiperCell
-                self?.cropRedactor = CropRedactor(baseImage: currentCell.photoImageView)
-                let cropRect = self?.cropRedactor?.drawCropRect()
-                self?.view.addSubview(cropRect!)
+                self?.viewModel.showCropController(sourceView: self!, imageView: currentCell.photoImageView)
                 
-                ///add tap recognizer for crop rectangle
-                self?.cropRedactor?.panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(self?.cropPanHandler(_:)))
-                cropRect?.addGestureRecognizer((self?.cropRedactor?.panGestureRecognizer)!)
+                //old crop redactor
+//                ///show crop buttons
+//                self?.collectionView.isUserInteractionEnabled = false
+//                self?.btnSelectPhoto.isUserInteractionEnabled = false
+//                self?.showEditButtonsWithAnimation()
+//
+//                ///draw crop rectangle
+//                let currentCell = self?.collectionView.visibleCells.first as! PhotoSwiperCell
+//                self?.cropRedactor = CropRedactor(baseImage: currentCell.photoImageView)
+//                let cropRect = self?.cropRedactor?.drawCropRect()
+//                self?.view.addSubview(cropRect!)
+//
+//                ///add tap recognizer for crop rectangle
+//                self?.cropRedactor?.panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(self?.cropPanHandler(_:)))
+//                cropRect?.addGestureRecognizer((self?.cropRedactor?.panGestureRecognizer)!)
             })
             .disposed(by: disposeBag)
     }
