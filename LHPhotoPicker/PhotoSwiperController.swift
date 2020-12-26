@@ -85,7 +85,16 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
     static var identifier: String {
         return String(describing: self)
     }
-    var viewModel: PhotoSwiperViewModel!
+    var viewModel: PhotoSwiperViewModel! {
+        didSet {
+            UIView.animate(withDuration: 0) {
+                self.collectionView.reloadData()
+            } completion: { _ in
+                let scrollToIndexPath = IndexPath(item: self.viewModel.scrollToIndex, section: 0)
+                self.collectionView.scrollToItem(at: scrollToIndexPath, at: .left, animated: false)
+            }
+        }
+    }
     private let disposeBag = DisposeBag()
     
     deinit {
@@ -115,8 +124,7 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        let scrollToIndexPath = IndexPath(item: viewModel.scrollToIndex, section: 0)
-        collectionView.scrollToItem(at: scrollToIndexPath, at: .left, animated: false)
+        super.viewDidAppear(animated)
     }
 
     private func addMainButtonsSubviews() {
@@ -194,7 +202,8 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
             .subscribe(onNext: {
                 [weak self] _ in
                 if self?.cropRedactor != nil {
-                    ///save cropped picture
+                    
+                    ///save cropped picture (добавить в обновлние ячейки проверку на измененную картинку)
                     let currentCell = self?.collectionView.visibleCells.first as! PhotoSwiperCell
                     currentCell.photoImageView.image = self?.cropRedactor?.editedImage
                     //let updIndexPath:[IndexPath] = [(self?.collectionView.indexPath(for: currentCell))!]
