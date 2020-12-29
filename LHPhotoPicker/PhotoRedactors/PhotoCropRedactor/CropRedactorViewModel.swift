@@ -8,19 +8,19 @@
 import UIKit
 
 protocol CropRedactorDelegate: class {
-    func obtainEditedImageView(editedImageView: UIImageView)
+    func obtainEditedImageView(editedImage: UIImage)
 }
 
 class CropRedactorViewModel {
     
-    var imageView: UIImageView
+    var image: UIImage
     weak var delegate: CropRedactorDelegate?
     
-    init(imageView: UIImageView) {
-        self.imageView = imageView
+    init(image: UIImage) {
+        self.image = image
     }
     
-    func setEditedImageView(editedImageView: UIImageView){
-        self.delegate?.obtainEditedImageView(editedImageView: editedImageView)
+    func setEditedImageView(editedImage: UIImage){
+        self.delegate?.obtainEditedImageView(editedImage: editedImage)
     }
 }

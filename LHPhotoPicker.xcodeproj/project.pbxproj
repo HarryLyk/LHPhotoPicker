@@ -11,6 +11,7 @@
 		9027379125546B38003EDE70 /* PhotoSelectionController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9027379025546B38003EDE70 /* PhotoSelectionController.storyboard */; };
 		9027379F2559DC93003EDE70 /* PhotoSelectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9027379D2559DC93003EDE70 /* PhotoSelectionCell.swift */; };
 		902737A02559DC93003EDE70 /* PhotoSelectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9027379E2559DC93003EDE70 /* PhotoSelectionCell.xib */; };
+		9051936625991494008312A5 /* ImageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9051936525991494008312A5 /* ImageScrollView.swift */; };
 		905C0B86254F0F2B007D00C2 /* UIViewControllerEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905C0B85254F0F2B007D00C2 /* UIViewControllerEx.swift */; };
 		905C0B8B254F1325007D00C2 /* MainScreenController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905C0B8A254F1325007D00C2 /* MainScreenController.swift */; };
 		905C0B8E254F1331007D00C2 /* MainScreenController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 905C0B8D254F1331007D00C2 /* MainScreenController.storyboard */; };
@@ -40,6 +41,7 @@
 		9027379025546B38003EDE70 /* PhotoSelectionController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PhotoSelectionController.storyboard; sourceTree = "<group>"; };
 		9027379D2559DC93003EDE70 /* PhotoSelectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSelectionCell.swift; sourceTree = "<group>"; };
 		9027379E2559DC93003EDE70 /* PhotoSelectionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoSelectionCell.xib; sourceTree = "<group>"; };
+		9051936525991494008312A5 /* ImageScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageScrollView.swift; sourceTree = "<group>"; };
 		905C0B85254F0F2B007D00C2 /* UIViewControllerEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerEx.swift; sourceTree = "<group>"; };
 		905C0B8A254F1325007D00C2 /* MainScreenController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenController.swift; sourceTree = "<group>"; };
 		905C0B8D254F1331007D00C2 /* MainScreenController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainScreenController.storyboard; sourceTree = "<group>"; };
@@ -87,6 +89,14 @@
 				9027379E2559DC93003EDE70 /* PhotoSelectionCell.xib */,
 			);
 			path = PhotoSelectionCell;
+			sourceTree = "<group>";
+		};
+		9050A080259B2C7C004B93C3 /* Customs */ = {
+			isa = PBXGroup;
+			children = (
+				9051936525991494008312A5 /* ImageScrollView.swift */,
+			);
+			path = Customs;
 			sourceTree = "<group>";
 		};
 		905C0B7B254F0605007D00C2 /* Extensions */ = {
@@ -184,6 +194,7 @@
 				905C0BAB2553FBA4007D00C2 /* PhotoSelection */,
 				909FB51A2569A06800676049 /* PhotoSwiper */,
 				90837391257E494700964201 /* PhotoRedactors */,
+				9050A080259B2C7C004B93C3 /* Customs */,
 				905C0B7B254F0605007D00C2 /* Extensions */,
 				905C0B90254F3874007D00C2 /* Resources */,
 				90E7FD57254B524D0083393D /* Assets.xcassets */,
@@ -362,6 +373,7 @@
 				905C0B8B254F1325007D00C2 /* MainScreenController.swift in Sources */,
 				90E7FD54254B524D0083393D /* SceneDelegate.swift in Sources */,
 				905C0BB02553FBE4007D00C2 /* PhotoSelectionController.swift in Sources */,
+				9051936625991494008312A5 /* ImageScrollView.swift in Sources */,
 				9066659A2597C9BD002F0C40 /* CropRedactorController.swift in Sources */,
 				9066659E2597C9E1002F0C40 /* CropRedactorViewModel.swift in Sources */,
 			);

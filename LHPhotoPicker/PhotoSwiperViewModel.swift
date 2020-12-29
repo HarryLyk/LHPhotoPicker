@@ -38,7 +38,11 @@ class PhotoSwiperViewModel {
     
     func showCropController(sourceView: UICollectionViewController, imageView: UIImageView) {
         
-        let cropRedactorViewModel = CropRedactorViewModel(imageView: imageView)
+        if imageView.image == nil {
+            print("No image was set")
+            return
+        }
+        let cropRedactorViewModel = CropRedactorViewModel(image: imageView.image!)
         let cropRedactorController = CropRedactorController()
         cropRedactorController.viewModel = cropRedactorViewModel
         cropRedactorController.modalPresentationStyle = .fullScreen

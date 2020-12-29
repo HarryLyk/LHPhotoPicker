@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
 class CropRedactorController: UIViewController {
 
@@ -29,23 +31,34 @@ class CropRedactorController: UIViewController {
         return button
     }()
     
-    let imageScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.backgroundColor = .systemBlue
+    let imageScrollView: ImageScrollView = {
+        let scrollView = ImageScrollView()
         return scrollView
     }()
     
-    var viewModel: CropRedactorViewModel!
+    var viewModel: CropRedactorViewModel! {
+        didSet {
+            imageScrollView.frame = view.frame
+            imageScrollView.setImageZoomView(image: self.viewModel.image)
+        }
+    }
+    var disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         addSubviews()
         setupConstraints()
+        setupRx()
+    }
+    
+    func addSubviews() {
+        view.addSubview(btnApply)
+        view.addSubview(btnCancel)
+        view.addSubview(imageScrollView)
     }
     
     func setupConstraints() {
-        
         btnCancel.translatesAutoresizingMaskIntoConstraints = false
         btnCancel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         btnCancel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
@@ -65,9 +78,21 @@ class CropRedactorController: UIViewController {
         imageScrollView.bottomAnchor.constraint(equalTo: btnCancel.topAnchor, constant: -20).isActive = true
     }
     
-    func addSubviews() {
-        view.addSubview(btnApply)
-        view.addSubview(btnCancel)
-        view.addSubview(imageScrollView)
+    func setupRx() {
+        
+        btnApply.rx.tap
+            .subscribe(onNext:{ [weak self] _ in
+                print("apply button was tapped")
+                self?.dismiss(animated: true, completion: nil)
+            })
+            .disposed(by: disposeBag)
+        
+        btnCancel.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                print("cancel button was tapped")
+                self?.dismiss(animated: true, completion: nil)
+            })
+            .disposed(by: disposeBag)
+            
     }
 }
