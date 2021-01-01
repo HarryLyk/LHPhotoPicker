@@ -24,7 +24,6 @@ class ImageScrollView: UIScrollView, UIScrollViewDelegate {
         self.showsVerticalScrollIndicator = false
         self.showsHorizontalScrollIndicator = false
         self.decelerationRate = .fast
-
     }
 
     required init?(coder: NSCoder) {
@@ -40,6 +39,10 @@ class ImageScrollView: UIScrollView, UIScrollViewDelegate {
         self.addSubview(imageZoomView)
         
         configureScrollView(imageSize: image.size)
+    }
+    
+    func getImage() -> UIImage {
+        return imageZoomView.image ?? UIImage()
     }
     
     func configureScrollView(imageSize: CGSize) {

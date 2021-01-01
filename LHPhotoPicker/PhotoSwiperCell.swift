@@ -13,19 +13,29 @@ class PhotoSwiperCell: UICollectionViewCell {
         return String(describing: self)
     }
     
-    let photoImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.contentMode = .scaleAspectFit
-        return imageView
+//    let photoImageView: UIImageView = {
+//        let imageView = UIImageView()
+//        imageView.translatesAutoresizingMaskIntoConstraints = false
+//        imageView.contentMode = .scaleAspectFit
+//        return imageView
+//    }()
+    
+    let imageScrollView: ImageScrollView = {
+        let scrollView = ImageScrollView()
+        return scrollView
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        backgroundColor = .black
-        addSubview(photoImageView)
+        addScrollView(frame: frame)
+        //addSubview(photoImageView)
         setupLayout()
+    }
+    
+    func addScrollView(frame: CGRect) {
+        imageScrollView.frame = frame
+        addSubview(imageScrollView)
     }
     
     required init?(coder: NSCoder) {
@@ -34,9 +44,10 @@ class PhotoSwiperCell: UICollectionViewCell {
     
     private func setupLayout(){
         ///setup photo image view constraints
-        photoImageView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
-        photoImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -60).isActive = true
-        photoImageView.leftAnchor.constraint(equalTo: leftAnchor, constant: 0).isActive = true
-        photoImageView.rightAnchor.constraint(equalTo: rightAnchor, constant: 0).isActive = true
+        imageScrollView.translatesAutoresizingMaskIntoConstraints = false
+        imageScrollView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
+        imageScrollView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -80).isActive = true
+        imageScrollView.leftAnchor.constraint(equalTo: leftAnchor, constant: 0).isActive = true
+        imageScrollView.rightAnchor.constraint(equalTo: rightAnchor, constant: 0).isActive = true
     }
 }

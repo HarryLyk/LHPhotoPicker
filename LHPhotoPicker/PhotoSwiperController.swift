@@ -160,7 +160,7 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
                             self?.viewModel.deleteDeselectedPhoto(index: index)
                             self?.btnSelectPhoto.backgroundColor = .none
                         } else {
-                            if let image = currentCell.photoImageView.image {
+                            if let image = currentCell.imageScrollView.imageZoomView.image {
                                 self?.viewModel.addSelectedPhoto(index: index, addPhotoes: image)
                                 self?.btnSelectPhoto.backgroundColor = .systemBlue
                             }
@@ -205,7 +205,7 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
                     
                     ///save cropped picture (добавить в обновлние ячейки проверку на измененную картинку)
                     let currentCell = self?.collectionView.visibleCells.first as! PhotoSwiperCell
-                    currentCell.photoImageView.image = self?.cropRedactor?.editedImage
+                    currentCell.imageScrollView.setImageZoomView(image: self?.cropRedactor?.editedImage ?? UIImage())
                     //let updIndexPath:[IndexPath] = [(self?.collectionView.indexPath(for: currentCell))!]
                     //self?.collectionView.reloadItems(at: updIndexPath)
                     self?.cropRedactor?.applyEdit()
@@ -221,7 +221,9 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
                 [weak self] _ in
                 
                 let currentCell = self?.collectionView.visibleCells.first as! PhotoSwiperCell
-                self?.viewModel.showCropController(sourceView: self!, imageView: currentCell.photoImageView)
+                let image = currentCell.imageScrollView.imageZoomView.image
+                if image == nil { return }
+                self?.viewModel.showCropController(sourceView: self!, image: image!)
                 
                 //old crop redactor
 //                ///show crop buttons
@@ -263,7 +265,8 @@ class PhotoSwiperController: UICollectionViewController, UICollectionViewDelegat
         
         PHImageManager.default().requestImage(for: viewModel.assets.object(at: indexPath.row), targetSize: CGSize(width: cellWidth, height: cellHeight), contentMode: .aspectFit, options: nil) { (image, error) in
             if image != nil {
-                cell.photoImageView.image = image
+                //cell.photoImageView.image = image
+                cell.imageScrollView.setImageZoomView(image: image!)
             }   
         }
         

@@ -31,17 +31,21 @@ class CropRedactorController: UIViewController {
         return button
     }()
     
-    let imageScrollView: ImageScrollView = {
-        let scrollView = ImageScrollView()
-        return scrollView
+    var imageScrollView: ImageScrollView = {
+        let imageScrollView = ImageScrollView()
+        return imageScrollView
     }()
     
-    var viewModel: CropRedactorViewModel! {
-        didSet {
-            imageScrollView.frame = view.frame
-            imageScrollView.setImageZoomView(image: self.viewModel.image)
-        }
-    }
+    var cropView: CropView = {
+        let view = CropView()
+        return view
+    }()
+    
+    let botViewConstr: CGFloat = 20 //constraint between top button anchor and bottom view anchor
+    let botBtnConstr: CGFloat = 30  //constraint between bottom button anchor and view anchor
+    let btnHeight: CGFloat = 40     //button height
+    
+    var viewModel: CropRedactorViewModel!
     var disposeBag = DisposeBag()
     
     override func viewDidLoad() {
@@ -49,33 +53,50 @@ class CropRedactorController: UIViewController {
 
         addSubviews()
         setupConstraints()
+    
         setupRx()
     }
     
     func addSubviews() {
         view.addSubview(btnApply)
         view.addSubview(btnCancel)
+        
+        let heightToView = btnHeight + botBtnConstr + botViewConstr
+        let viewFrame = CGRect(x: view.frame.origin.x, y: view.frame.origin.y, width: view.frame.width, height: view.frame.height - heightToView)
+        
+        imageScrollView.frame = viewFrame
         view.addSubview(imageScrollView)
+        imageScrollView.setImageZoomView(image: self.viewModel.image)
+        
+        cropView.frame = viewFrame
+        view.addSubview(cropView)
+        cropView.setCropImageView(image: self.viewModel.image)
     }
     
     func setupConstraints() {
         btnCancel.translatesAutoresizingMaskIntoConstraints = false
         btnCancel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        btnCancel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+        btnCancel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -botBtnConstr).isActive = true
         btnCancel.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        btnCancel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        btnCancel.heightAnchor.constraint(equalToConstant: btnHeight).isActive = true
         
         btnApply.translatesAutoresizingMaskIntoConstraints = false
         btnApply.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-        btnApply.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30).isActive = true
+        btnApply.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -botBtnConstr).isActive = true
         btnApply.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        btnApply.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        btnApply.heightAnchor.constraint(equalToConstant: btnHeight).isActive = true
         
         imageScrollView.translatesAutoresizingMaskIntoConstraints = false
         imageScrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         imageScrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         imageScrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        imageScrollView.bottomAnchor.constraint(equalTo: btnCancel.topAnchor, constant: -20).isActive = true
+        imageScrollView.bottomAnchor.constraint(equalTo: btnCancel.topAnchor, constant: -botViewConstr).isActive = true
+        
+        cropView.translatesAutoresizingMaskIntoConstraints = false
+        cropView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        cropView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        cropView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        cropView.bottomAnchor.constraint(equalTo: btnCancel.topAnchor, constant: -botViewConstr).isActive = true
     }
     
     func setupRx() {

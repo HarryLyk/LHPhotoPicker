@@ -36,13 +36,9 @@ class PhotoSwiperViewModel {
         self.delegate?.obtainSeectedPhotoes(selectedPhotoes: selectedPhotoes)
     }
     
-    func showCropController(sourceView: UICollectionViewController, imageView: UIImageView) {
+    func showCropController(sourceView: UICollectionViewController, image: UIImage) {
         
-        if imageView.image == nil {
-            print("No image was set")
-            return
-        }
-        let cropRedactorViewModel = CropRedactorViewModel(image: imageView.image!)
+        let cropRedactorViewModel = CropRedactorViewModel(image: image)
         let cropRedactorController = CropRedactorController()
         cropRedactorController.viewModel = cropRedactorViewModel
         cropRedactorController.modalPresentationStyle = .fullScreen
