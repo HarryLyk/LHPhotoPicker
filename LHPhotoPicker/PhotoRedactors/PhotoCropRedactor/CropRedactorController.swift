@@ -9,8 +9,8 @@ import UIKit
 import RxCocoa
 import RxSwift
 
-class CropRedactorController: UIViewController {
-
+class CropRedactorController: UIViewController, CropViewDelegate {
+    
     let btnCancel: UIButton = {
        let button = UIButton()
         button.layer.borderWidth = 1
@@ -53,14 +53,16 @@ class CropRedactorController: UIViewController {
 
         addSubviews()
         setupConstraints()
-    
         setupRx()
+        
+        cropView.delegate = self
     }
     
     func addSubviews() {
         view.addSubview(btnApply)
         view.addSubview(btnCancel)
         
+        ///count frame size of view which will present image and crop redactor view
         let heightToView = btnHeight + botBtnConstr + botViewConstr
         let viewFrame = CGRect(x: view.frame.origin.x, y: view.frame.origin.y, width: view.frame.width, height: view.frame.height - heightToView)
         
@@ -116,4 +118,10 @@ class CropRedactorController: UIViewController {
             .disposed(by: disposeBag)
             
     }
+    
+    func sendZoomRect(zoomRect: CGRect) {
+        self.imageScrollView.performZoomToRect(zoomRect: zoomRect)
+    }
 }
+
+

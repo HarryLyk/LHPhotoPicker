@@ -145,6 +145,14 @@ class ImageScrollView: UIScrollView, UIScrollViewDelegate {
         return zoomRect
     }
     
+    func performZoomToRect(zoomRect: CGRect) {
+//        let currentScale = self.zoomScale
+//        let minScale = self.minimumZoomScale
+//        let maxScale = self.maximumZoomScale
+        
+        self.zoom(to: zoomRect, animated: true)
+    }
+    
     ///set UIView which will be zoomed
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.imageZoomView
