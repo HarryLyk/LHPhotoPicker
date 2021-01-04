@@ -352,8 +352,7 @@ class CropView: UIView {
     }
     
     @objc func handleCornerButtonPan(_ gestureRecognizer: UIPanGestureRecognizer){
-        print("handle corner button tap")
-        
+
         guard gestureRecognizer.view != nil else { return }
         let btnView = gestureRecognizer.view
         
@@ -361,68 +360,132 @@ class CropView: UIView {
         let translation = gestureRecognizer.translation(in: btnView?.superview)
         
         if gestureRecognizer.state == .began {
-            ///get start point position relative to cropView, not superview
-            let touchPoint = gestureRecognizer.location(in: btnView)
-            print("touchPoint: ", touchPoint)
-            
             ///get initial point of cropView to draw crop rectangle when it changes
             self.imageCropInitialPoint = imageCropView.frame.origin
-            print("imageCropInitialPoint: ", self.imageCropInitialPoint)
-            
             ///get initial frame of cropRect frame to count it's changes from it
             self.imageCropInitialRect = self.imageCropView.frame
         }
-        
         
         if gestureRecognizer.state == .changed {
             let width = self.imageCropInitialRect.width
             let heigh = self.imageCropInitialRect.height
             let minX = self.imageCropInitialPoint.x
             let minY = self.imageCropInitialPoint.y
-            let maxX = minX + width
-            let maxY = minY + heigh
             
-//            print("originX: ", originX)
-//            print("originY: ", originY)
-//            print("minX: ", minX)
-//            print("minY: ", minY)
-//            print("maxX: ", maxX)
-//            print("maxY: ", maxY)
-//            print("cropWidth: ", curWidth)
-//            print("cropHeigh: ", curHeigh)
-//            print("translation.x : ", translation.x)
-//            print("translation.y : ", translation.y)
+            var cropFrame: CGRect = CGRect()
             
-            let newCropFrame = CGRect(x: minX + translation.x, y: minY + translation.y, width: width - translation.x, height: heigh - translation.y)
-            configureCropViewFrames(cropFrame: newCropFrame)
+            switch btnView {
+            case btnTopLeft:
+                if width - translation.x < minCropSize || heigh - translation.y < minCropSize { return }
+                if width - translation.x > width {
+                    cropFrame = CGRect(x: minX, y: minY + translation.y, width: width, height: heigh - translation.y)
+                } else if heigh - translation.y > heigh {
+                    cropFrame = CGRect(x: minX + translation.x, y: minY, width: width - translation.x, height: heigh)
+                } else {
+                    cropFrame = CGRect(x: minX + translation.x, y: minY + translation.y, width: width - translation.x, height: heigh - translation.y)
+                }
+            case btnTopRight:
+                if width + translation.x < minCropSize || heigh - translation.y < minCropSize { return }
+                if width + translation.x > width {
+                    cropFrame = CGRect(x: minX, y: minY + translation.y, width: width, height: heigh - translation.y)
+                } else if heigh - translation.y > heigh {
+                    cropFrame = CGRect(x: minX, y: minY, width: width + translation.x, height: heigh)
+                } else {
+                    cropFrame = CGRect(x: minX, y: minY + translation.y, width: width + translation.x, height: heigh - translation.y)
+                }
+            case btnBottomRight:
+                if width + translation.x < minCropSize || heigh + translation.y < minCropSize { return }
+                if width + translation.x > width {
+                    cropFrame = CGRect(x: minX, y: minY, width: width, height: heigh + translation.y)
+                } else if heigh + translation.y > heigh {
+                    cropFrame = CGRect(x: minX, y: minY, width: width + translation.x, height: heigh)
+                } else {
+                    cropFrame = CGRect(x: minX, y: minY, width: width + translation.x, height: heigh + translation.y)
+                }
+            case btnBottomLeft:
+                if width - translation.x < minCropSize || heigh + translation.y < minCropSize { return }
+                if width - translation.x > width {
+                    cropFrame = CGRect(x: minX, y: minY, width: width, height: heigh + translation.y)
+                } else if heigh + translation.y > heigh {
+                    cropFrame = CGRect(x: minX + translation.x, y: minY, width: width - translation.x, height: heigh)
+                } else {
+                    cropFrame = CGRect(x: minX + translation.x, y: minY, width: width - translation.x, height: heigh + translation.y)
+                }
+            default:
+                ///unnknown button
+                return
+            }
+            
+            configureCropButtons(cropFrame: cropFrame)
         }
-        
         
         if gestureRecognizer.state == .ended {
-            let endXpoint = self.imageCropInitialPoint.x + translation.x
-            let endYpoint = self.imageCropInitialPoint.y + translation.y
-            print("endXpoint", endXpoint)
-            print("endYpoint", endYpoint)
-
-            
-//            var scale: CGFloat = 1
-//            ///get scale factor witch describes how the image was changed to fit the UIViewImage borders
-//            let widthScale = self.bounds.width / (imageCropView.frame.width)
-//            let heightscale = self.bounds.height / (imageCropView.frame.height)
-//            if widthScale > heightscale {
-//                scale = heightscale
-//            } else {
-//                scale = widthScale
-//            }
-//
-//            print("new scale : ", scale)
             self.delegate?.sendZoomRect(zoomRect: self.imageCropView.frame)
         }
-        
     }
     
     @objc func handleLineButtonPan(_ gestureRecognizer: UIPanGestureRecognizer){
-        print("handle line button tap")
+        guard gestureRecognizer.view != nil else { return }
+        let btnView = gestureRecognizer.view
+        
+        ///get coordinates relative to superview
+        let translation = gestureRecognizer.translation(in: btnView?.superview)
+        
+        if gestureRecognizer.state == .began {
+            ///get initial point of cropView to draw crop rectangle when it changes
+            self.imageCropInitialPoint = imageCropView.frame.origin
+            ///get initial frame of cropRect frame to count it's changes from it
+            self.imageCropInitialRect = self.imageCropView.frame
+        }
+        
+        if gestureRecognizer.state == .changed {
+            let width = self.imageCropInitialRect.width
+            let heigh = self.imageCropInitialRect.height
+            let minX = self.imageCropInitialPoint.x
+            let minY = self.imageCropInitialPoint.y
+            
+            var cropFrame: CGRect = CGRect()
+            
+            switch btnView {
+            case btnTopLine:
+                if heigh - translation.y < minCropSize { return }
+                if heigh - translation.y > heigh {
+                    cropFrame = self.imageCropInitialRect
+                } else {
+                    cropFrame = CGRect(x: minX, y: minY + translation.y, width: width, height: heigh - translation.y)
+                }
+            case btnRightLine:
+                if width + translation.x < minCropSize { return }
+                if width + translation.x > width {
+                    cropFrame = self.imageCropInitialRect
+                } else {
+                    cropFrame = CGRect(x: minX, y: minY, width: width + translation.x, height: heigh)
+                }
+            case btnBottomLine:
+                if heigh + translation.y < minCropSize { return }
+                if heigh + translation.y > heigh {
+                    cropFrame = self.imageCropInitialRect
+                } else {
+                    cropFrame = CGRect(x: minX, y: minY, width: width, height: heigh + translation.y)
+                }
+            case btnLeftLine:
+                if width - translation.x < minCropSize { return }
+                if width - translation.x > width {
+                    cropFrame = self.imageCropInitialRect
+                } else {
+                    cropFrame = CGRect(x: minX + translation.x, y: minY, width: width - translation.x, height: heigh)
+                }
+            default:
+                ///unnknown button
+                return
+            }
+            
+            configureCropButtons(cropFrame: cropFrame)
+        }
+        
+//        if gestureRecognizer.state == .ended {
+//            self.delegate?.sendZoomRect(zoomRect: self.imageCropView.frame)
+//        }
     }
 
 }
