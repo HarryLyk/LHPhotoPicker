@@ -235,6 +235,22 @@ class CropView: UIView {
     }
     
     func configureCropViews(imageSize: CGSize){
+       
+        let cropFrame = centerCropArea(imageSize: imageSize)
+        configureCropViewFrames(cropFrame: cropFrame)
+        
+//        imageCropView.frame = cropFrame
+//        self.layer.borderWidth = 1
+//        self.layer.borderColor = UIColor.green.cgColor
+//
+//        configureCropEmptyViews(cropFrame: cropFrame)
+//        configureCropButtons(cropFrame: cropFrame)
+        
+        ///Add all crop buttons gesture recognizers
+        addCropButtonsGestureRecongizers()
+    }
+    
+    func centerCropArea(imageSize: CGSize) -> CGRect {
         var scale: CGFloat = 1
 
         ///get scale factor witch describes how the image was changed to fit the UIViewImage borders
@@ -251,17 +267,7 @@ class CropView: UIView {
         let positionY = (self.bounds.height - cropSize.height) / 2.0
         let cropFrame = CGRect(x: positionX, y: positionY, width: cropSize.width, height: cropSize.height)
         
-        configureCropViewFrames(cropFrame: cropFrame)
-        
-//        imageCropView.frame = cropFrame
-//        self.layer.borderWidth = 1
-//        self.layer.borderColor = UIColor.green.cgColor
-//
-//        configureCropEmptyViews(cropFrame: cropFrame)
-//        configureCropButtons(cropFrame: cropFrame)
-        
-        ///Add all crop buttons gesture recognizers
-        addCropButtonsGestureRecongizers()
+        return cropFrame
     }
     
     func configureCropViewFrames(cropFrame: CGRect) {
@@ -272,24 +278,23 @@ class CropView: UIView {
     }
     
     func configureCropEmptyViews(cropFrame: CGRect) {
-        var xPosition: CGFloat
-        var yPosition: CGFloat
-        let emptyHeight: CGFloat = (self.frame.height - cropFrame.height) / 2
-        let emptyWidth: CGFloat = (self.frame.width - cropFrame.width) / 2
+        let xPosition: CGFloat = self.frame.origin.x
+        var yPosition: CGFloat = self.frame.origin.y
+        let height: CGFloat
+        let width: CGFloat
+
+        ///configure top empty view
+        cropTopView.frame = CGRect(x: xPosition, y: yPosition, width: self.frame.width, height: cropFrame.minY)
         
-        xPosition = self.frame.origin.x
-        yPosition = self.frame.origin.y
-        cropTopView.frame = CGRect(x: xPosition, y: yPosition, width: self.frame.width, height: emptyHeight)
+        yPosition = self.frame.origin.y + cropFrame.minY + cropFrame.height
+        height = self.frame.height - cropFrame.minY - cropFrame.height
+        cropBottomView.frame = CGRect(x: xPosition, y: yPosition, width: self.frame.width, height: height)
         
-        yPosition = self.frame.origin.y + cropFrame.height + emptyHeight
-        cropBottomView.frame = CGRect(x: xPosition, y: yPosition, width: self.frame.width, height: emptyHeight)
+        yPosition = self.frame.origin.y + cropFrame.minY
+        cropLeftView.frame = CGRect(x: xPosition, y: yPosition, width: cropFrame.minX, height: cropFrame.height)
         
-        yPosition = self.frame.origin.y + emptyHeight
-        cropLeftView.frame = CGRect(x: xPosition, y: yPosition, width: emptyWidth, height: cropFrame.height)
-        
-        xPosition = self.frame.width - emptyWidth
-        cropRightView.frame = CGRect(x: xPosition, y: yPosition, width: emptyWidth, height: cropFrame.height)
-        
+        width = self.frame.width - cropFrame.width - cropFrame.minX
+        cropRightView.frame = CGRect(x: cropFrame.maxX, y: yPosition, width: width, height: cropFrame.height)
     }
     
     func configureCropButtons(cropFrame: CGRect){
@@ -376,8 +381,11 @@ class CropView: UIView {
             
             switch btnView {
             case btnTopLeft:
-                if width - translation.x < minCropSize || heigh - translation.y < minCropSize { return }
-                if width - translation.x > width {
+                if width - translation.x < minCropSize || heigh - translation.y < minCropSize {
+                    return
+                } else if (width - translation.x > width) && (heigh - translation.y > heigh) {
+                    cropFrame = self.imageCropInitialRect
+                } else if width - translation.x > width {
                     cropFrame = CGRect(x: minX, y: minY + translation.y, width: width, height: heigh - translation.y)
                 } else if heigh - translation.y > heigh {
                     cropFrame = CGRect(x: minX + translation.x, y: minY, width: width - translation.x, height: heigh)
@@ -385,8 +393,11 @@ class CropView: UIView {
                     cropFrame = CGRect(x: minX + translation.x, y: minY + translation.y, width: width - translation.x, height: heigh - translation.y)
                 }
             case btnTopRight:
-                if width + translation.x < minCropSize || heigh - translation.y < minCropSize { return }
-                if width + translation.x > width {
+                if width + translation.x < minCropSize || heigh - translation.y < minCropSize {
+                    return
+                } else if (width + translation.x > width) && (heigh - translation.y > heigh){
+                    cropFrame = self.imageCropInitialRect
+                } else if width + translation.x > width {
                     cropFrame = CGRect(x: minX, y: minY + translation.y, width: width, height: heigh - translation.y)
                 } else if heigh - translation.y > heigh {
                     cropFrame = CGRect(x: minX, y: minY, width: width + translation.x, height: heigh)
@@ -394,8 +405,11 @@ class CropView: UIView {
                     cropFrame = CGRect(x: minX, y: minY + translation.y, width: width + translation.x, height: heigh - translation.y)
                 }
             case btnBottomRight:
-                if width + translation.x < minCropSize || heigh + translation.y < minCropSize { return }
-                if width + translation.x > width {
+                if width + translation.x < minCropSize || heigh + translation.y < minCropSize {
+                    return
+                } else if (width + translation.x > width) && (heigh + translation.y > heigh) {
+                    cropFrame = self.imageCropInitialRect
+                } else if width + translation.x > width {
                     cropFrame = CGRect(x: minX, y: minY, width: width, height: heigh + translation.y)
                 } else if heigh + translation.y > heigh {
                     cropFrame = CGRect(x: minX, y: minY, width: width + translation.x, height: heigh)
@@ -403,8 +417,11 @@ class CropView: UIView {
                     cropFrame = CGRect(x: minX, y: minY, width: width + translation.x, height: heigh + translation.y)
                 }
             case btnBottomLeft:
-                if width - translation.x < minCropSize || heigh + translation.y < minCropSize { return }
-                if width - translation.x > width {
+                if width - translation.x < minCropSize || heigh + translation.y < minCropSize {
+                    return
+                } else if (width - translation.x > width) && (heigh + translation.y > heigh) {
+                    cropFrame = self.imageCropInitialRect
+                } else if width - translation.x > width {
                     cropFrame = CGRect(x: minX, y: minY, width: width, height: heigh + translation.y)
                 } else if heigh + translation.y > heigh {
                     cropFrame = CGRect(x: minX + translation.x, y: minY, width: width - translation.x, height: heigh)
@@ -417,6 +434,7 @@ class CropView: UIView {
             }
             
             configureCropButtons(cropFrame: cropFrame)
+            configureCropViewFrames(cropFrame: cropFrame)
         }
         
         if gestureRecognizer.state == .ended {
@@ -481,6 +499,7 @@ class CropView: UIView {
             }
             
             configureCropButtons(cropFrame: cropFrame)
+            configureCropViewFrames(cropFrame: cropFrame)
         }
         
 //        if gestureRecognizer.state == .ended {
