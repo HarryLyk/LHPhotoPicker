@@ -119,8 +119,9 @@ class CropRedactorController: UIViewController, CropViewDelegate {
             
     }
     
-    func sendZoomRect(zoomRect: CGRect) {
-        self.imageScrollView.performZoomToRect(zoomRect: zoomRect)
+    func sendCustomZoom(zoomRect: CGRect, centerPoint: CGPoint) {
+        //print("CropRedacotrController: perform zoom to rect delegate fucntion")
+        self.imageScrollView.performCustomZoom(customZoomRect: zoomRect, centerPoint: centerPoint)
     }
 }
 

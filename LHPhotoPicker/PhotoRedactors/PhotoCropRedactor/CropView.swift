@@ -8,7 +8,7 @@
 import UIKit
 
 protocol CropViewDelegate: class {
-    func sendZoomRect(zoomRect: CGRect)
+    func sendCustomZoom(zoomRect: CGRect, centerPoint: CGPoint)
 }
 
 class CropView: UIView {
@@ -116,6 +116,7 @@ class CropView: UIView {
     var baseImageCropRect = CGRect()
     var imageCropInitialPoint = CGPoint()
     var imageCropInitialRect = CGRect()
+    var zoomCropFrame = CGRect()
 
     
     lazy var topLeftButtonPan: UIPanGestureRecognizer = {
@@ -180,7 +181,6 @@ class CropView: UIView {
         
         ///remove previous data if we set new crop views after old
         removeCropViews()
-        
         addCropViews()
         
         if image.size.width >= minCropSize && image.size.height >= minCropSize {
@@ -188,11 +188,6 @@ class CropView: UIView {
         } else {
             print("image size is too small")
         }
-        
-//        print("Frame origin X : ", self.frame.origin.x)
-//        print("Frame origin Y : ", self.frame.origin.y)
-//        print("imageCropView X : ", self.imageCropView.frame.origin.x)
-//        print("imageCropView Y : ", self.imageCropView.frame.origin.y)
     }
     
     func removeCropViews() {
@@ -238,13 +233,6 @@ class CropView: UIView {
        
         let cropFrame = centerCropArea(imageSize: imageSize)
         configureCropViewFrames(cropFrame: cropFrame)
-        
-//        imageCropView.frame = cropFrame
-//        self.layer.borderWidth = 1
-//        self.layer.borderColor = UIColor.green.cgColor
-//
-//        configureCropEmptyViews(cropFrame: cropFrame)
-//        configureCropButtons(cropFrame: cropFrame)
         
         ///Add all crop buttons gesture recognizers
         addCropButtonsGestureRecongizers()
@@ -366,18 +354,17 @@ class CropView: UIView {
         
         if gestureRecognizer.state == .began {
             ///get initial point of cropView to draw crop rectangle when it changes
-            self.imageCropInitialPoint = imageCropView.frame.origin
+            self.imageCropInitialPoint = self.imageCropView.frame.origin
             ///get initial frame of cropRect frame to count it's changes from it
             self.imageCropInitialRect = self.imageCropView.frame
         }
         
         if gestureRecognizer.state == .changed {
+            var cropFrame: CGRect = CGRect()
             let width = self.imageCropInitialRect.width
             let heigh = self.imageCropInitialRect.height
             let minX = self.imageCropInitialPoint.x
             let minY = self.imageCropInitialPoint.y
-            
-            var cropFrame: CGRect = CGRect()
             
             switch btnView {
             case btnTopLeft:
@@ -433,12 +420,41 @@ class CropView: UIView {
                 return
             }
             
-            configureCropButtons(cropFrame: cropFrame)
-            configureCropViewFrames(cropFrame: cropFrame)
+            //configureCropButtons(cropFrame: cropFrame)
+            configureCropEmptyViews(cropFrame: cropFrame)
+            zoomCropFrame = cropFrame
+            //configureCropViewFrames(cropFrame: cropFrame)
         }
         
         if gestureRecognizer.state == .ended {
-            self.delegate?.sendZoomRect(zoomRect: self.imageCropView.frame)
+            if zoomCropFrame == self.imageCropInitialRect { return }
+//            print("x origin point: ", zoomCropFrame.origin.x)
+//            print("y origin point: ", zoomCropFrame.origin.y)
+//            zoomCropFrame.origin.x = zoomCropFrame.minX
+//            zoomCropFrame.origin.y = zoomCropFrame.minY
+//            print("x new origin point: ", zoomCropFrame.origin.x)
+//            print("y new origin point: ", zoomCropFrame.origin.y)
+            
+            ///set to initial position
+            configureCropViewFrames(cropFrame: self.imageCropInitialRect)
+            
+            ///get zoom center point
+            let centerX: CGFloat = zoomCropFrame.minX + ((zoomCropFrame.maxX - zoomCropFrame.minX) / 2)
+            let centerY: CGFloat = zoomCropFrame.minY + ((zoomCropFrame.maxY - zoomCropFrame.minY) / 2)
+//            print("cropFrame minX: ", zoomCropFrame.minX)
+//            print("cropFrame maxX: ", zoomCropFrame.maxX)
+//            print("cropFrame minY: ", zoomCropFrame.minY)
+//            print("cropFrame maxY: ", zoomCropFrame.maxY)
+//            print("centerX: ", centerX)
+//            print("centerY: ", centerY)
+            let zoomCenterPoint: CGPoint = CGPoint(x: centerX, y: centerY)
+             
+//            print("CropView: perform end of pan gesture recognizer")
+//            print("crop initial rectangle width : ", self.imageCropInitialRect.width)
+//            print("crop initial rectangle height: ", self.imageCropInitialRect.height)
+//            print("crop rectangle width : ", self.imageCropView.frame.width)
+//            print("crop rectangle height: ", self.imageCropView.frame.height)
+            self.delegate?.sendCustomZoom(zoomRect: zoomCropFrame, centerPoint: zoomCenterPoint)
         }
     }
     
@@ -498,7 +514,6 @@ class CropView: UIView {
                 return
             }
             
-            configureCropButtons(cropFrame: cropFrame)
             configureCropViewFrames(cropFrame: cropFrame)
         }
         

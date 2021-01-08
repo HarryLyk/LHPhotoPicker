@@ -73,11 +73,11 @@ class ImageScrollView: UIScrollView, UIScrollViewDelegate {
         var maxScale: CGFloat = 1.0
         
         if minScale < 0.1 {
-            maxScale = 0.3
+            maxScale = 0.5
         } else if minScale >= 0.1 && minScale < 0.5 {
-            maxScale = 0.7
+            maxScale = 1.0
         } else if minScale >= 0.5 {
-            maxScale = max(1.0, minScale)
+            maxScale = max(2.0, minScale)
         }
         
         self.minimumZoomScale = minScale
@@ -134,23 +134,67 @@ class ImageScrollView: UIScrollView, UIScrollViewDelegate {
         var zoomRect = CGRect.zero
         let bounds = self.bounds
         
-        ///make zoom rectangle smale then original on scale factor
         zoomRect.size.width = bounds.size.width / scale
         zoomRect.size.height = bounds.size.height / scale
         
         ///count start draw point of zoomRect
+        print("center x : ", center.x)
+        print("center y : ", center.y)
+        
         zoomRect.origin.x = center.x - (zoomRect.size.width / 2)
         zoomRect.origin.y = center.y - (zoomRect.size.height / 2)
+        
+        print("bounds width : ", bounds.size.width)
+        print("bounds height: ", bounds.size.height)
+        print("zoomRect.size.width : ", zoomRect.size.width)
+        print("zoomRect.size.height: ", zoomRect.size.height)
+        print("zoomRect origin x: ", zoomRect.origin.x)
+        print("zoomRect origin y: ", zoomRect.origin.y)
         
         return zoomRect
     }
     
-    func performZoomToRect(zoomRect: CGRect) {
-//        let currentScale = self.zoomScale
-//        let minScale = self.minimumZoomScale
-//        let maxScale = self.maximumZoomScale
+    func performCustomZoom(customZoomRect: CGRect, centerPoint: CGPoint) {
+
+        //Надо сделать нормальлный перевод координат centerPoint в scroll view
         
-        self.zoom(to: zoomRect, animated: true)
+        print("\n\n\nScroll View perform zoom")
+        print("bounds width:", self.bounds.width)
+        print("bounds height:", self.bounds.height)
+        print("customZoomRect width : ", customZoomRect.width)
+        print("customZoomRect height: ", customZoomRect.height)
+        print("Center point: ", centerPoint)
+        let zoomCenterPoint = CGPoint(x: centerPoint.x / self.zoomScale, y: centerPoint.y / self.zoomScale)
+        print("Final center point: ", zoomCenterPoint)
+        
+        ///1) count zoom scale factor
+        let widthScale: CGFloat = customZoomRect.width / self.bounds.width
+        let heightScale: CGFloat = customZoomRect.height / self.bounds.height
+        let zoomScale: CGFloat = self.zoomScale / min(widthScale, heightScale)
+        
+//        let realWidthScale = customZoomRect.width / (self.bounds.width / self.zoomScale)
+//        let realHeightScale = customZoomRect.height / (self.bounds.height / self.zoomScale)
+//        print("realWidthScale : ", realWidthScale)
+//        print("readHeightScale: ", realHeightScale)
+//        zoomScale = max(realWidthScale, realHeightScale)
+        
+        ///2) write function similar to performZoom(), but for current purpuse
+        print("current scale: ", self.zoomScale)
+        print("final zoom scale: ", zoomScale)
+        
+        ///translate center point
+        
+        ///3) call zoomRect(scale: CGFloat, center: CGPoint) to get zoom rectangle
+        let finalZoomRect: CGRect = zoomRect(scale: zoomScale, center: zoomCenterPoint)
+        
+//        let originalZoomScale = self.zoomScale
+//        self.zoomScale = zoomScale
+        ///4) call zoom() function
+        self.zoom(to: finalZoomRect, animated: true)
+        //self.zoomScale = originalZoomScale
+        ///5) call function to reconfigure CropView
+
+        
     }
     
     ///set UIView which will be zoomed
