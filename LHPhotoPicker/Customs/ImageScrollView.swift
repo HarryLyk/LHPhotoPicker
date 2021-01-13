@@ -10,6 +10,7 @@ import UIKit
 class ImageScrollView: UIScrollView, UIScrollViewDelegate {
     
     var imageZoomView: UIImageView!
+    var baseZoom: CGFloat!
     
     lazy var zoomingTap: UITapGestureRecognizer = {
         let zoomingTap = UITapGestureRecognizer(target: self, action: #selector(handleZoomingTap))
@@ -51,6 +52,7 @@ class ImageScrollView: UIScrollView, UIScrollViewDelegate {
         
         setZoomMinMaxScale()
         self.zoomScale = self.minimumZoomScale
+        self.baseZoom = zoomScale
         
         self.imageZoomView.addGestureRecognizer(self.zoomingTap)
         self.imageZoomView.isUserInteractionEnabled = true
@@ -58,7 +60,7 @@ class ImageScrollView: UIScrollView, UIScrollViewDelegate {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         self.centerImage()
     }
     
@@ -89,6 +91,15 @@ class ImageScrollView: UIScrollView, UIScrollViewDelegate {
         let boundSize = self.bounds.size
         var frameToCenter = imageZoomView.frame
         
+//        print("bound origin X: ", self.bounds.origin.x)
+//        print("bound origin Y: ", self.bounds.origin.y)
+//        print("bound width: ", self.bounds.width)
+//        print("bound height: ", self.bounds.height)
+//        print("frameTocenter originX: ", frameToCenter.origin.x)
+//        print("frameTocenter originY: ", frameToCenter.origin.y)
+//        print("frameTocenter width: ", frameToCenter.width)
+//        print("frameTocenter height: ", frameToCenter.height)
+//
         ///count center coordinates for image
         if frameToCenter.size.width < boundSize.width {
             frameToCenter.origin.x = (boundSize.width - frameToCenter.size.width) / 2
@@ -110,7 +121,7 @@ class ImageScrollView: UIScrollView, UIScrollViewDelegate {
     ///
     @objc func handleZoomingTap(sender: UIGestureRecognizer){
         let location = sender.location(in: sender.view)
-
+        
         self.performZoom(point: location, animated: true)
     }
     
@@ -137,64 +148,93 @@ class ImageScrollView: UIScrollView, UIScrollViewDelegate {
         zoomRect.size.width = bounds.size.width / scale
         zoomRect.size.height = bounds.size.height / scale
         
-        ///count start draw point of zoomRect
-        print("center x : ", center.x)
-        print("center y : ", center.y)
+        print("touch point: ", center)
         
+        ///count start draw point of zoomRect
         zoomRect.origin.x = center.x - (zoomRect.size.width / 2)
         zoomRect.origin.y = center.y - (zoomRect.size.height / 2)
-        
-        print("bounds width : ", bounds.size.width)
-        print("bounds height: ", bounds.size.height)
-        print("zoomRect.size.width : ", zoomRect.size.width)
-        print("zoomRect.size.height: ", zoomRect.size.height)
-        print("zoomRect origin x: ", zoomRect.origin.x)
-        print("zoomRect origin y: ", zoomRect.origin.y)
         
         return zoomRect
     }
     
     func performCustomZoom(customZoomRect: CGRect, centerPoint: CGPoint) {
-
-        //Надо сделать нормальлный перевод координат centerPoint в scroll view
         
-        print("\n\n\nScroll View perform zoom")
-        print("bounds width:", self.bounds.width)
-        print("bounds height:", self.bounds.height)
-        print("customZoomRect width : ", customZoomRect.width)
-        print("customZoomRect height: ", customZoomRect.height)
-        print("Center point: ", centerPoint)
-        let zoomCenterPoint = CGPoint(x: centerPoint.x / self.zoomScale, y: centerPoint.y / self.zoomScale)
-        print("Final center point: ", zoomCenterPoint)
+        print("\n\nScroll View perform zoom data : ")
         
-        ///1) count zoom scale factor
-        let widthScale: CGFloat = customZoomRect.width / self.bounds.width
-        let heightScale: CGFloat = customZoomRect.height / self.bounds.height
-        let zoomScale: CGFloat = self.zoomScale / min(widthScale, heightScale)
         
-//        let realWidthScale = customZoomRect.width / (self.bounds.width / self.zoomScale)
-//        let realHeightScale = customZoomRect.height / (self.bounds.height / self.zoomScale)
-//        print("realWidthScale : ", realWidthScale)
-//        print("readHeightScale: ", realHeightScale)
-//        zoomScale = max(realWidthScale, realHeightScale)
+        ///translate center point to scroll view
+        let zoomRect = countCustomZoomRect(customZoomRect: customZoomRect, centerPoint: centerPoint)
+       
+        self.zoom(to: zoomRect, animated: true)
         
-        ///2) write function similar to performZoom(), but for current purpuse
-        print("current scale: ", self.zoomScale)
-        print("final zoom scale: ", zoomScale)
-        
-        ///translate center point
-        
-        ///3) call zoomRect(scale: CGFloat, center: CGPoint) to get zoom rectangle
-        let finalZoomRect: CGRect = zoomRect(scale: zoomScale, center: zoomCenterPoint)
-        
-//        let originalZoomScale = self.zoomScale
-//        self.zoomScale = zoomScale
-        ///4) call zoom() function
-        self.zoom(to: finalZoomRect, animated: true)
         //self.zoomScale = originalZoomScale
         ///5) call function to reconfigure CropView
 
         
+    }
+    
+    func countCustomZoomRect(customZoomRect: CGRect, centerPoint: CGPoint) -> CGRect {
+        
+        
+        var zoomRect = CGRect()
+        
+        print("current zoom scale: ", self.zoomScale)
+        
+        ///true width:
+        let customWidth = customZoomRect.width / self.zoomScale
+        let customHeight = customZoomRect.height / self.zoomScale
+        print("true custom width: ", customZoomRect.width / self.zoomScale)
+        print("true custom zoom height: ", customZoomRect.height / self.zoomScale)
+                
+        /// Get scroll view point
+        zoomRect.origin.x = (customZoomRect.origin.x - ((self.bounds.width - self.imageZoomView.frame.width) / 2)) / self.baseZoom
+        zoomRect.origin.y = (customZoomRect.origin.y - ((self.bounds.height - self.imageZoomView.frame.height) / 2)) / self.baseZoom
+        
+        let customWidthScale = self.imageZoomView.frame.width / customWidth
+        let customHeightScale = self.imageZoomView.frame.height / customHeight
+        let customScale = min(customWidthScale, customHeightScale)
+        
+        ///setup zoom rect width and height:
+        zoomRect.size.width = self.imageZoomView.frame.width / customScale
+        zoomRect.size.height = self.imageZoomView.frame.height / customScale
+        
+        
+        print("customZoomRect origin: ", customZoomRect.origin)
+        
+        zoomRect.origin.x = (self.contentSize.width / self.zoomScale) - zoomRect.width
+        zoomRect.origin.y = (self.contentSize.height / self.zoomScale) - zoomRect.height
+        let zoomRectCenter = CGPoint(x: zoomRect.origin.x + (zoomRect.width / 2), y: zoomRect.origin.y + (zoomRect.width / 2))
+        print("current center point:", zoomRectCenter )
+        
+        if (customWidthScale >= customHeightScale) {
+            let width = self.imageZoomView.frame.width / customWidthScale
+            let centerX = zoomRect.origin.x + (zoomRect.width - width) + width / 2
+            let centerOffset = (centerX - zoomRectCenter.x) * self.zoomScale
+            print("could be width: ", width)
+            print("could be center X:", centerX)
+            print("offset : ", centerOffset)
+            self.frame.origin.x -= centerOffset
+        } else {
+            
+        }
+        
+        
+        print("zoomRect origin:", zoomRect.origin)
+        print("zoomSize :", zoomRect.size)
+//        print("frame size:", self.frame.size)
+//        print("bound size : ", self.bounds.size)
+        
+        return zoomRect
+    }
+    
+    func drawCircle(center: CGPoint, color: CGColor) -> CALayer {
+        let circlePath = UIBezierPath(arcCenter: center, radius: CGFloat(10), startAngle: CGFloat(0), endAngle: CGFloat(Double.pi * 2), clockwise: true)
+            
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = circlePath.cgPath
+        shapeLayer.fillColor = color
+        
+        return shapeLayer
     }
     
     ///set UIView which will be zoomed

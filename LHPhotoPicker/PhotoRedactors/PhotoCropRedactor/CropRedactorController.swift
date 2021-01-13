@@ -41,9 +41,12 @@ class CropRedactorController: UIViewController, CropViewDelegate {
         return view
     }()
     
-    let botViewConstr: CGFloat = 20 //constraint between top button anchor and bottom view anchor
+    
     let botBtnConstr: CGFloat = 30  //constraint between bottom button anchor and view anchor
     let btnHeight: CGFloat = 40     //button height
+    let botScrollViewConstr: CGFloat = 60 //constraint between top button anchor and bottom view anchor
+    let topScrollViewConstr: CGFloat = 60  //constraint between scroll view and top anchors
+    let svHorisontalConstr: CGFloat = 30//constraint between scroll view and left, right anchors
     
     var viewModel: CropRedactorViewModel!
     var disposeBag = DisposeBag()
@@ -63,8 +66,11 @@ class CropRedactorController: UIViewController, CropViewDelegate {
         view.addSubview(btnCancel)
         
         ///count frame size of view which will present image and crop redactor view
-        let heightToView = btnHeight + botBtnConstr + botViewConstr
-        let viewFrame = CGRect(x: view.frame.origin.x, y: view.frame.origin.y, width: view.frame.width, height: view.frame.height - heightToView)
+        let heightToView = btnHeight + botBtnConstr + botScrollViewConstr + topScrollViewConstr
+        let viewFrame = CGRect(x: view.frame.origin.x + svHorisontalConstr,
+                               y: view.frame.origin.y + topScrollViewConstr,
+                               width: view.frame.width - svHorisontalConstr * 2,
+                               height: view.frame.height - heightToView)
         
         imageScrollView.frame = viewFrame
         view.addSubview(imageScrollView)
@@ -89,16 +95,16 @@ class CropRedactorController: UIViewController, CropViewDelegate {
         btnApply.heightAnchor.constraint(equalToConstant: btnHeight).isActive = true
         
         imageScrollView.translatesAutoresizingMaskIntoConstraints = false
-        imageScrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        imageScrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        imageScrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        imageScrollView.bottomAnchor.constraint(equalTo: btnCancel.topAnchor, constant: -botViewConstr).isActive = true
+        imageScrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: topScrollViewConstr).isActive = true
+        imageScrollView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: svHorisontalConstr).isActive = true
+        imageScrollView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -svHorisontalConstr).isActive = true
+        imageScrollView.bottomAnchor.constraint(equalTo: btnCancel.topAnchor, constant: -botScrollViewConstr).isActive = true
         
         cropView.translatesAutoresizingMaskIntoConstraints = false
-        cropView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        cropView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        cropView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        cropView.bottomAnchor.constraint(equalTo: btnCancel.topAnchor, constant: -botViewConstr).isActive = true
+        cropView.topAnchor.constraint(equalTo: view.topAnchor, constant: topScrollViewConstr).isActive = true
+        cropView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: svHorisontalConstr).isActive = true
+        cropView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -svHorisontalConstr).isActive = true
+        cropView.bottomAnchor.constraint(equalTo: btnCancel.topAnchor, constant: -botScrollViewConstr).isActive = true
     }
     
     func setupRx() {

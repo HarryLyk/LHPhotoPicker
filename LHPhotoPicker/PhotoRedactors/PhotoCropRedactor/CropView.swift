@@ -18,8 +18,8 @@ class CropView: UIView {
     ///This is UIView of rectangle that contains visable part of image
     var imageCropView: UIView = {
         let view = UIView()
-        view.layer.borderWidth = 2
-        view.layer.borderColor = UIColor.white.cgColor
+        view.layer.borderWidth = 3
+        view.layer.borderColor = UIColor.red.cgColor
         return view
     }()
     
@@ -29,6 +29,7 @@ class CropView: UIView {
         let view = UIView()
         view.layer.borderWidth = 3
         view.layer.borderColor = UIColor.systemBlue.cgColor
+//        view.backgroundColor = .black
         return view
     }()
     
@@ -36,6 +37,7 @@ class CropView: UIView {
         let view = UIView()
         view.layer.borderWidth = 3
         view.layer.borderColor = UIColor.systemBlue.cgColor
+//        view.backgroundColor = .black
         return view
     }()
     
@@ -43,6 +45,7 @@ class CropView: UIView {
         let view = UIView()
         view.layer.borderWidth = 3
         view.layer.borderColor = UIColor.systemBlue.cgColor
+//        view.backgroundColor = .black
         return view
     }()
     
@@ -50,6 +53,7 @@ class CropView: UIView {
         let view = UIView()
         view.layer.borderWidth = 3
         view.layer.borderColor = UIColor.systemBlue.cgColor
+//        view.backgroundColor = .black
         return view
     }()
     
@@ -266,19 +270,19 @@ class CropView: UIView {
     }
     
     func configureCropEmptyViews(cropFrame: CGRect) {
-        let xPosition: CGFloat = self.frame.origin.x
-        var yPosition: CGFloat = self.frame.origin.y
+        let xPosition: CGFloat = self.bounds.origin.x
+        var yPosition: CGFloat = self.bounds.origin.y
         let height: CGFloat
         let width: CGFloat
 
         ///configure top empty view
         cropTopView.frame = CGRect(x: xPosition, y: yPosition, width: self.frame.width, height: cropFrame.minY)
         
-        yPosition = self.frame.origin.y + cropFrame.minY + cropFrame.height
-        height = self.frame.height - cropFrame.minY - cropFrame.height
+        yPosition = self.bounds.origin.y + cropFrame.minY + cropFrame.height
+        height = self.frame.height - cropFrame.height - cropFrame.minY
         cropBottomView.frame = CGRect(x: xPosition, y: yPosition, width: self.frame.width, height: height)
         
-        yPosition = self.frame.origin.y + cropFrame.minY
+        yPosition = self.bounds.origin.y + cropFrame.minY
         cropLeftView.frame = CGRect(x: xPosition, y: yPosition, width: cropFrame.minX, height: cropFrame.height)
         
         width = self.frame.width - cropFrame.width - cropFrame.minX
