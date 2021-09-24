@@ -31,7 +31,7 @@ class PhotoSelectionController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         if viewModel.updateSelectedCell == true {
-            print("viewWillApera update")
+            print("viewWillAppear update")
             DispatchQueue.main.async {
                 self.photoCollectionView.reloadData()
             }
@@ -138,7 +138,7 @@ class PhotoSelectionController: UIViewController {
     }
     
     
-    /// If cancell was pressed show, no photo access view
+    /// If cancel was pressed show, no photo access view
     private func cancelPressed() {
     }
     

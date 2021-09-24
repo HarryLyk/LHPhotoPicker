@@ -8,7 +8,7 @@
 import UIKit
 import Photos
 
-protocol PhotoSwiperDelegate: class {
+protocol PhotoSwiperDelegate: AnyObject {
     func obtainSeectedPhotoes(selectedPhotoes: [Int: UIImage])
 }
 
@@ -42,7 +42,6 @@ class PhotoSwiperViewModel {
         let cropRedactorController = CropRedactorController()
         cropRedactorController.viewModel = cropRedactorViewModel
         cropRedactorController.modalPresentationStyle = .fullScreen
-        //cropRedactorViewModel.delegate = sourceView as? CropRedactorDelegate
         sourceView.present(cropRedactorController, animated: true)
     }
 }

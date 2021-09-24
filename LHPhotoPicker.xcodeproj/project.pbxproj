@@ -11,6 +11,7 @@
 		9027379125546B38003EDE70 /* PhotoSelectionController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9027379025546B38003EDE70 /* PhotoSelectionController.storyboard */; };
 		9027379F2559DC93003EDE70 /* PhotoSelectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9027379D2559DC93003EDE70 /* PhotoSelectionCell.swift */; };
 		902737A02559DC93003EDE70 /* PhotoSelectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9027379E2559DC93003EDE70 /* PhotoSelectionCell.xib */; };
+		903973DF26027B9200710174 /* CropImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903973DE26027B9200710174 /* CropImageView.swift */; };
 		9051936625991494008312A5 /* ImageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9051936525991494008312A5 /* ImageScrollView.swift */; };
 		905C0B86254F0F2B007D00C2 /* UIViewControllerEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905C0B85254F0F2B007D00C2 /* UIViewControllerEx.swift */; };
 		905C0B8B254F1325007D00C2 /* MainScreenController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905C0B8A254F1325007D00C2 /* MainScreenController.swift */; };
@@ -22,9 +23,7 @@
 		9066659A2597C9BD002F0C40 /* CropRedactorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 906665992597C9BD002F0C40 /* CropRedactorController.swift */; };
 		9066659E2597C9E1002F0C40 /* CropRedactorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9066659D2597C9E1002F0C40 /* CropRedactorViewModel.swift */; };
 		906D5052259D30F000C58503 /* CropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 906D5051259D30F000C58503 /* CropView.swift */; };
-		907902A9258187BE000DFA3E /* RedactorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907902A8258187BE000DFA3E /* RedactorFactory.swift */; };
 		9083738B257E2D5200964201 /* PhotoSwiperControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9083738A257E2D5200964201 /* PhotoSwiperControls.swift */; };
-		90837393257E496900964201 /* CropRedactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90837392257E496900964201 /* CropRedactor.swift */; };
 		9091BBEA255D3B3100D1B625 /* PhotoSelectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9091BBE9255D3B3100D1B625 /* PhotoSelectionModel.swift */; };
 		909FB51C2569A09100676049 /* PhotoSwiperController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909FB51B2569A09100676049 /* PhotoSwiperController.swift */; };
 		909FB5202569A11400676049 /* PhotoSwiperCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909FB51F2569A11400676049 /* PhotoSwiperCell.swift */; };
@@ -42,6 +41,7 @@
 		9027379025546B38003EDE70 /* PhotoSelectionController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PhotoSelectionController.storyboard; sourceTree = "<group>"; };
 		9027379D2559DC93003EDE70 /* PhotoSelectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSelectionCell.swift; sourceTree = "<group>"; };
 		9027379E2559DC93003EDE70 /* PhotoSelectionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoSelectionCell.xib; sourceTree = "<group>"; };
+		903973DE26027B9200710174 /* CropImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropImageView.swift; sourceTree = "<group>"; };
 		9051936525991494008312A5 /* ImageScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageScrollView.swift; sourceTree = "<group>"; };
 		905C0B85254F0F2B007D00C2 /* UIViewControllerEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerEx.swift; sourceTree = "<group>"; };
 		905C0B8A254F1325007D00C2 /* MainScreenController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenController.swift; sourceTree = "<group>"; };
@@ -53,9 +53,7 @@
 		906665992597C9BD002F0C40 /* CropRedactorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropRedactorController.swift; sourceTree = "<group>"; };
 		9066659D2597C9E1002F0C40 /* CropRedactorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropRedactorViewModel.swift; sourceTree = "<group>"; };
 		906D5051259D30F000C58503 /* CropView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropView.swift; sourceTree = "<group>"; };
-		907902A8258187BE000DFA3E /* RedactorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedactorFactory.swift; sourceTree = "<group>"; };
 		9083738A257E2D5200964201 /* PhotoSwiperControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSwiperControls.swift; sourceTree = "<group>"; };
-		90837392257E496900964201 /* CropRedactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropRedactor.swift; sourceTree = "<group>"; };
 		9091BBE9255D3B3100D1B625 /* PhotoSelectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSelectionModel.swift; sourceTree = "<group>"; };
 		909FB51B2569A09100676049 /* PhotoSwiperController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSwiperController.swift; sourceTree = "<group>"; };
 		909FB51F2569A11400676049 /* PhotoSwiperCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSwiperCell.swift; sourceTree = "<group>"; };
@@ -136,6 +134,7 @@
 			children = (
 				906665992597C9BD002F0C40 /* CropRedactorController.swift */,
 				9066659D2597C9E1002F0C40 /* CropRedactorViewModel.swift */,
+				903973DE26027B9200710174 /* CropImageView.swift */,
 				906D5051259D30F000C58503 /* CropView.swift */,
 			);
 			path = PhotoCropRedactor;
@@ -145,8 +144,6 @@
 			isa = PBXGroup;
 			children = (
 				906665982597C987002F0C40 /* PhotoCropRedactor */,
-				907902A8258187BE000DFA3E /* RedactorFactory.swift */,
-				90837392257E496900964201 /* CropRedactor.swift */,
 			);
 			path = PhotoRedactors;
 			sourceTree = "<group>";
@@ -359,13 +356,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				903973DF26027B9200710174 /* CropImageView.swift in Sources */,
 				905C0B9E254F3D11007D00C2 /* UIColorEx.swift in Sources */,
-				907902A9258187BE000DFA3E /* RedactorFactory.swift in Sources */,
 				901700E8255AB0C70025F378 /* UICollectionViewCellEx.swift in Sources */,
 				905C0B86254F0F2B007D00C2 /* UIViewControllerEx.swift in Sources */,
 				909FB5242569A12C00676049 /* PhotoSwiperViewModel.swift in Sources */,
 				9083738B257E2D5200964201 /* PhotoSwiperControls.swift in Sources */,
-				90837393257E496900964201 /* CropRedactor.swift in Sources */,
 				909FB5202569A11400676049 /* PhotoSwiperCell.swift in Sources */,
 				9091BBEA255D3B3100D1B625 /* PhotoSelectionModel.swift in Sources */,
 				909FB51C2569A09100676049 /* PhotoSwiperController.swift in Sources */,

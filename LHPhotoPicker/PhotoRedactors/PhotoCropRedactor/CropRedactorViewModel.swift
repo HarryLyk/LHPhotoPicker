@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol CropRedactorDelegate: class {
+protocol CropRedactorDelegate: AnyObject {
     func obtainEditedImageView(editedImage: UIImage)
 }
 

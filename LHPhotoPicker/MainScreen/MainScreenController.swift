@@ -33,7 +33,7 @@ class MainScreenController: UIViewController {
         }
     }
     
-    static var identificator: String {
+    static var identifier: String {
         return String(describing: self)
     }
         
@@ -54,8 +54,8 @@ class MainScreenController: UIViewController {
         let storyboard = UIStoryboard(name: "PhotoSelectionController", bundle: nil)
         let photoSelectionVC = storyboard.instantiateViewController(identifier: PhotoSelectionController.identifier) as! PhotoSelectionController
         
-        photoSelectionVC.viewModel = setPhotoSelectionViewModel()
-        photoSelectionVC.viewModel.cellInRowPortriant = 3
+        photoSelectionVC.viewModel = setPhotoSelectionViewModel()   //initialize viewModel with base parameters
+        photoSelectionVC.viewModel.cellInRowPortriant = 3           //add new parameters to viewModels
         photoSelectionVC.viewModel.cellInRowLandscape = 5
         
         photoSelectionVC.title = "Select photo"
