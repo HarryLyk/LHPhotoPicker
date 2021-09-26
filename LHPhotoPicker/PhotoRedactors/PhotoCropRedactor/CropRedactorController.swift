@@ -54,7 +54,6 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
     var botCropImageViewConstraint: CGFloat = 0 //constraint between imageCropView and bottom view border.
     
     var initialCropView: CGRect = CGRect()
-    var cropFrameInitialPoint: CGPoint = CGPoint()
     var panEndedCropFrame: CGRect = CGRect()
     var cropMaxFrame: CGRect = CGRect()
     
@@ -94,9 +93,6 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
         btnApply.widthAnchor.constraint(equalToConstant: 80).isActive = true
         btnApply.heightAnchor.constraint(equalToConstant: btnHeight).isActive = true
         
-        //cropImageView.translatesAutoresizingMaskIntoConstraints = false
-        //cropView.translatesAutoresizingMaskIntoConstraints = false
-        
         ///set maximum area, available for image
         let heightToView = btnHeight + botBtnConstr + topBtnConstr + topCropImageViewConsraint
         cropMaxFrame = CGRect(x: view.frame.origin.x + svHorisontalConstr,
@@ -110,8 +106,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
         ///
         cropImageView.setupCropImageView(maxCropImageViewFrame: cropMaxFrame, image: viewModel.image)
         
-        cropView.frame = cropImageView.frame
-        if cropView.setupCropView(size: cropView.frame.size) == false{
+        if cropView.setupCropView(maxCropViewFrame: cropMaxFrame, frame: cropImageView.frame) == false{
             self.dismiss(animated: true, completion: nil)
         }
         
@@ -119,8 +114,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
         botCropImageViewConstraint = botBtnConstr + btnHeight + topBtnConstr
         
         ///Setup pan handler function for cropView buttons
-        cropView.setCornerBtnPan(target: self, action: #selector(handleCornerBtnPan(_:)))
-        cropView.setLineBtnPan(target: self, action: #selector(handleLineBtnPan(_:)))
+        cropView.setCropBtnPan(target: self, action: #selector(handleCropBtnPan(_:)))
         cropView.addPangestureRecognizers()
     }
     
@@ -146,15 +140,12 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
     ///
     /// Handle cropView corner buttons pan
     ///
-    @objc func handleCornerBtnPan(_ gestureRecognizer: UIPanGestureRecognizer) {
+    @objc func handleCropBtnPan(_ gestureRecognizer: UIPanGestureRecognizer) {
         
         let btnView = gestureRecognizer.view
-        
-        ///get coordinates relative to superview
         let translation = gestureRecognizer.translation(in: btnView?.superview)
         
         if gestureRecognizer.state == .began {
-            ///Save initial cropView state when touch crop buttons
             self.initialCropView = cropView.frame
         }
         
@@ -220,75 +211,6 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                 } else {
                     cropFrame = CGRect(x: minX + translation.x, y: minY, width: width - translation.x, height: height + translation.y)
                 }
-            default:
-                print("unknown button")
-                return
-            }
-            
-            //update buttons now
-            
-            cropView.updateCropView(newCropFrame: cropFrame)
-            
-            //save current crop Frame for .ended operation handling
-            panEndedCropFrame = cropFrame
-        }
-        
-        if gestureRecognizer.state == .ended {
-            /// If nothing changed
-            if panEndedCropFrame == self.initialCropView { return }
-            
-            /// Configure new cropView frame according to last crop and call configureCropViewFrame()
-            let newCropViewFrame = countCropFrameAfterPanEnd(panEndedCropFrame: panEndedCropFrame)
-            cropView.updateCropView(newCropFrame: newCropViewFrame)
-            
-            /// Configure size and scale of cropImageView
-            cropImageView.setupZoomFrameSize(zoomEndFrame: panEndedCropFrame)
-            
-            ///Configure of x,y coordinates of cropImageView
-            switch btnView {
-            case cropView.btnTopLeft:
-                updateCropImageViewOrigin(newCropViewFrame: newCropViewFrame)
-            case cropView.btnTopRight:
-                updateCropImageViewOrigin(newCropViewFrame: newCropViewFrame)
-            case cropView.btnBotRight:
-                updateCropImageViewOrigin(newCropViewFrame: newCropViewFrame)
-            case cropView.btnBotLeft:
-                updateCropImageViewOrigin(newCropViewFrame: newCropViewFrame)
-            default:
-                print("Unknown button")
-            }
-        }
-    }
-    
-    
-    ///
-    /// Handle cropView line buttons pan
-    ///
-    @objc func handleLineBtnPan(_ gestureRecognizer: UIPanGestureRecognizer) {
-        guard gestureRecognizer.view != nil else { return }
-        
-        let btnView = gestureRecognizer.view
-        let translation = gestureRecognizer.translation(in: btnView?.superview) ///get coordinates relative to superview
-        
-        if gestureRecognizer.state == .began {
-            self.initialCropView = cropView.frame
-            self.cropFrameInitialPoint = cropView.frame.origin
-        }
-        
-        
-        if gestureRecognizer.state == .changed {
-            cropView.layer.borderColor = .none
-            cropView.layer.borderWidth = 0
-            
-            var cropFrame: CGRect = CGRect()
-            let width  = self.initialCropView.width
-            let height = self.initialCropView.height
-            let minX = self.initialCropView.origin.x
-            let minY = self.initialCropView.origin.y
-            let minWidth = cropView.minCropWidth
-            let minHegith = cropView.minCropHeight
-            
-            switch btnView {
             case cropView.btnTopLine:
                 if height - translation.y < minHegith {
                     return
@@ -322,40 +244,27 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                     cropFrame = CGRect(x: minX, y: minY, width: width + translation.x, height: height)
                 }
             default:
-                print("unknown line button")
+                print("unknown button")
                 return
             }
             
-            //update buttons now
             cropView.updateCropView(newCropFrame: cropFrame)
-            
-            //save current crop Frame for .ended operation handling
             panEndedCropFrame = cropFrame
         }
         
         if gestureRecognizer.state == .ended {
-            if panEndedCropFrame == self.initialCropView { return } /// If nothing changed
+            /// If nothing changed
+            if panEndedCropFrame == self.initialCropView { return }
             
             /// Configure new cropView frame according to last crop and call configureCropViewFrame()
-            let newCropViewFrame = countCropFrameAfterPanEnd(panEndedCropFrame: panEndedCropFrame)
+            let newCropViewFrame = countCropFrameToMax(panEndedCropFrame: panEndedCropFrame)
             cropView.updateCropView(newCropFrame: newCropViewFrame)
-            
+
             /// Configure size and scale of cropImageView
-            cropImageView.setupZoomFrameSize(zoomEndFrame: panEndedCropFrame)
+            cropImageView.setupToZoomFrame(zoomFrame: panEndedCropFrame)
             
-            ///Update cropImageView origin x,y
-            switch btnView {
-            case cropView.btnTopLine:
-                updateCropImageViewOrigin(newCropViewFrame: newCropViewFrame)
-            case cropView.btnRightLine:
-                updateCropImageViewOrigin(newCropViewFrame: newCropViewFrame)
-            case cropView.btnBotLine:
-                updateCropImageViewOrigin(newCropViewFrame: newCropViewFrame)
-            case cropView.btnLeftLine:
-                updateCropImageViewOrigin(newCropViewFrame: newCropViewFrame)
-            default:
-                print("Unknown button")
-            }
+            ///Configure of x,y coordinates of cropImageView
+            updateCropImageViewOrigin(newCropViewFrame: newCropViewFrame)
         }
     }
     
@@ -364,7 +273,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
     /// Count new crop frame after pan has ended
     /// Max frame available - cropViewFrame was set at init function
     ///
-    private func countCropFrameAfterPanEnd(panEndedCropFrame: CGRect) -> CGRect {
+    private func countCropFrameToMax(panEndedCropFrame: CGRect) -> CGRect {
         
         let scale = min(cropMaxFrame.width / panEndedCropFrame.width, cropMaxFrame.height / panEndedCropFrame.height)
         let size = CGSize(width: panEndedCropFrame.width * scale, height: panEndedCropFrame.height * scale)
@@ -377,7 +286,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
     
     
     ///
-    /// Setup cropImageView origin point after zoom
+    /// Setup cropImageView origin point for correnct zoom frame
     ///
     private func updateCropImageViewOrigin(newCropViewFrame: CGRect){
         ///Берем предыдущую верхнюю левую точку области, в которой отображается картинка из cropImageView
@@ -390,7 +299,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
         cropImageView.originVisablePoint = CGPoint(x: cropImageView.originVisablePoint.x + xAlign, y: cropImageView.originVisablePoint.y + yAlign)
         
         ///Высчитываем на сколько надо сдвинуть влево и вверх cropImageView для отображения увеличенной  выделенной области
-        let scale: CGFloat = min(cropMaxFrame.width / panEndedCropFrame.width, cropMaxFrame.height / panEndedCropFrame.height)
+        let scale: CGFloat = min(cropImageView.maxFrame.width / panEndedCropFrame.width, cropImageView.maxFrame.height / panEndedCropFrame.height)
         let xShift = ((panEndedCropFrame.origin.x - initialCropView.origin.x) * scale)
         let yShift = ((panEndedCropFrame.origin.y - initialCropView.origin.y) * scale)
         

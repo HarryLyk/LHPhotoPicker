@@ -37,14 +37,7 @@ class CropImageView : UIImageView {
     //
     func setupFrame(imageSize: CGSize) -> CGRect{
         
-        let widthScale = self.maxFrame.width / imageSize.width
-        let heightScale = self.maxFrame.height / imageSize.height
-        if widthScale > heightScale {
-            self.scale = heightScale
-        } else {
-            self.scale = widthScale
-        }
-        
+        self.scale = min(self.maxFrame.width / imageSize.width, self.maxFrame.height / imageSize.height)
         let size = CGSize(width: imageSize.width * scale, height: imageSize.height * scale)
         
         ///
@@ -63,17 +56,9 @@ class CropImageView : UIImageView {
     //
     //  Count new size and scale according to maxFrame
     //
-    func setupZoomFrameSize(zoomEndFrame: CGRect) {
-        
-        let widthScale = self.maxFrame.width / zoomEndFrame.width
-        let heightScale = self.maxFrame.height / zoomEndFrame.height
-        var scale: CGFloat = 0
+    func setupToZoomFrame(zoomFrame: CGRect) {
 
-        if (widthScale > heightScale) {
-            scale = heightScale
-        } else {
-            scale = widthScale
-        }
+        let scale: CGFloat = min(self.maxFrame.width / zoomFrame.width, self.maxFrame.height / zoomFrame.height)
         
         ///Apply new scale
         self.frame.size = CGSize(width: self.frame.width * scale, height: self.frame.height * scale)

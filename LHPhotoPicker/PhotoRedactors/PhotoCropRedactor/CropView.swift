@@ -97,16 +97,17 @@ class CropView: UIView {
     let minLineHeight: CGFloat = 40 /// If btnRightLine or btnLeftLine less then that value, it's button view will not be added
     var minCropWidth: CGFloat = 10   /// minimum cropView width, when handle pan gesture
     var minCropHeight: CGFloat = 10  /// minimum cropView height, when handle pan gesture
+    var maxFrame: CGRect = .init()
     
-    func setupCropView(size: CGSize) -> Bool {
+    func setupCropView(maxCropViewFrame: CGRect, frame: CGRect) -> Bool {
+
+        if (frame.size.width < btnWidth * 2) || (frame.size.height < btnHeight * 2) { return false }
         
-        if (size.width < btnWidth * 2) || (size.height < btnHeight * 2) {
-            return false
-        }
-        
+        self.frame = frame
+        self.maxFrame = maxCropViewFrame
         removeCropViews()
         addCropViews()
-        return configureCropViewButtons(size: size)
+        return configureCropViewButtons(size: frame.size)
     }
     
     
@@ -143,7 +144,6 @@ class CropView: UIView {
         configureCropViewButtons(size: newCropFrame.size)
     }
     
-    
     func configureCropViewButtons(size: CGSize) -> Bool{
 
         let rightX = self.bounds.origin.x + (self.bounds.width - btnWidth)
@@ -177,17 +177,12 @@ class CropView: UIView {
     }
     
     /// Setup corner buttons pan gestures
-    func setCornerBtnPan(target: Any?, action: Selector) {
+    func setCropBtnPan(target: Any?, action: Selector) {
         
         btnTopLeftPan = UIPanGestureRecognizer(target: target, action: action)
         btnTopRightPan = UIPanGestureRecognizer(target: target, action: action)
         btnBotRightPan = UIPanGestureRecognizer(target: target, action: action)
         btnBotLeftPan = UIPanGestureRecognizer(target: target, action: action)
-    }
-    
-    /// Setup line buttons pan gestures
-    func setLineBtnPan(target: Any?, action: Selector) {
-        
         btnTopLinePan = UIPanGestureRecognizer(target: target, action: action)
         btnBotLinePan = UIPanGestureRecognizer(target: target, action: action)
         btnRightLinePan = UIPanGestureRecognizer(target: target, action: action)
