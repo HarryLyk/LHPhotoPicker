@@ -53,8 +53,8 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
     let svHorisontalConstr: CGFloat = 20        //constraint between cropView and left, right anchors
     var botCropImageViewConstraint: CGFloat = 0 //constraint between imageCropView and bottom view border.
     
-    var initialCropView: CGRect = CGRect()
-    var panEndedCropFrame: CGRect = CGRect()
+    var panStartCropFrame: CGRect = CGRect()
+    var panEndCropFrame: CGRect = CGRect()
     var cropMaxFrame: CGRect = CGRect()
     
     var viewModel: CropRedactorViewModel!
@@ -104,9 +104,10 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
         ///  Setup cropImageView frame, so cropImageView could count image XY and size
         ///  parameters according to superview (this controller) XY coordinates
         ///
-        cropImageView.setupCropImageView(maxCropImageViewFrame: cropMaxFrame, image: viewModel.image)
-        
-        if cropView.setupCropView(maxCropViewFrame: cropMaxFrame, frame: cropImageView.frame) == false{
+        if cropImageView.setupCropImageView(maxCropImageViewFrame: cropMaxFrame, image: viewModel.image, maxScale: 3.5) == false {
+            self.dismiss(animated: true, completion: nil)
+        }
+        if cropView.setupCropView(maxCropViewFrame: cropMaxFrame, frame: cropImageView.frame) == false {
             self.dismiss(animated: true, completion: nil)
         }
         
@@ -146,7 +147,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
         let translation = gestureRecognizer.translation(in: btnView?.superview)
         
         if gestureRecognizer.state == .began {
-            self.initialCropView = cropView.frame
+            self.panStartCropFrame = cropView.frame
         }
         
         if gestureRecognizer.state == .changed {
@@ -155,10 +156,10 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
             
             ///Get border values for new cropFrame
             var cropFrame: CGRect = CGRect()
-            let width  = self.initialCropView.width
-            let height = self.initialCropView.height
-            let minX = self.initialCropView.origin.x
-            let minY = self.initialCropView.origin.y
+            let width  = self.panStartCropFrame.width
+            let height = self.panStartCropFrame.height
+            let minX = self.panStartCropFrame.origin.x
+            let minY = self.panStartCropFrame.origin.y
             let minWidth = cropView.minCropWidth
             let minHegith = cropView.minCropHeight
             
@@ -167,7 +168,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                 if width - translation.x < minWidth || height - translation.y < minHegith {
                     return
                 } else if width - translation.x > width && height - translation.y > height {
-                    cropFrame = self.initialCropView
+                    cropFrame = self.panStartCropFrame
                 } else if width - translation.x > width {
                     cropFrame = CGRect(x: minX, y: minY + translation.y, width: width, height: height - translation.y)
                 } else if height - translation.y > height {
@@ -179,7 +180,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                 if width + translation.x < minWidth || height - translation.y < minHegith {
                     return
                 } else if width + translation.x > width && height - translation.y > height {
-                    cropFrame = self.initialCropView
+                    cropFrame = self.panStartCropFrame
                 } else if width + translation.x > width {
                     cropFrame = CGRect(x: minX, y: minY + translation.y, width: width, height: height - translation.y)
                 } else if height - translation.y > height {
@@ -191,7 +192,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                 if width + translation.x < minWidth || height + translation.y < minHegith {
                     return
                 } else if width + translation.x > width && height + translation.y > height {
-                    cropFrame = self.initialCropView
+                    cropFrame = self.panStartCropFrame
                 } else if width + translation.x > width {
                     cropFrame = CGRect(x: minX, y: minY, width: width, height: height + translation.y)
                 } else if height + translation.y > height {
@@ -203,7 +204,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                 if width - translation.x < minWidth || height + translation.y < minHegith {
                     return
                 } else if width - translation.x > width && height + translation.y > height {
-                    cropFrame = self.initialCropView
+                    cropFrame = self.panStartCropFrame
                 } else if width - translation.x > width {
                     cropFrame = CGRect(x: minX, y: minY, width: width, height: height + translation.y)
                 } else if height + translation.y > height {
@@ -215,7 +216,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                 if height - translation.y < minHegith {
                     return
                 } else if height - translation.y > height {
-                    cropFrame = self.initialCropView
+                    cropFrame = self.panStartCropFrame
                 } else {
                     cropFrame = CGRect(x: minX, y: minY + translation.y, width: width, height: height - translation.y)
                 }
@@ -223,7 +224,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                 if height + translation.y < minHegith {
                     return
                 } else if height + translation.y > height {
-                    cropFrame = self.initialCropView
+                    cropFrame = self.panStartCropFrame
                 } else {
                     cropFrame = CGRect(x: minX, y: minY, width: width, height: height + translation.y)
                 }
@@ -231,7 +232,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                 if width - translation.x < minWidth {
                     return
                 } else if width - translation.x > width {
-                    cropFrame = self.initialCropView
+                    cropFrame = self.panStartCropFrame
                 } else {
                     cropFrame = CGRect(x: minX + translation.x, y: minY, width: width - translation.x, height: height)
                 }
@@ -239,7 +240,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                 if width + translation.x < minWidth {
                     return
                 } else if width + translation.x > width {
-                    cropFrame = self.initialCropView
+                    cropFrame = self.panStartCropFrame
                 } else {
                     cropFrame = CGRect(x: minX, y: minY, width: width + translation.x, height: height)
                 }
@@ -248,23 +249,21 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                 return
             }
             
-            cropView.updateCropView(newCropFrame: cropFrame)
-            panEndedCropFrame = cropFrame
+            cropView.updateCropFrame(finalCropFrame: cropFrame)
+            panEndCropFrame = cropFrame
         }
         
         if gestureRecognizer.state == .ended {
-            /// If nothing changed
-            if panEndedCropFrame == self.initialCropView { return }
+            if panEndCropFrame == self.panStartCropFrame { return }
+            let finalZoomFrame = countFinalZoomFrame(fromFrame: panEndCropFrame)
             
-            /// Configure new cropView frame according to last crop and call configureCropViewFrame()
-            let newCropViewFrame = countCropFrameToMax(panEndedCropFrame: panEndedCropFrame)
-            cropView.updateCropView(newCropFrame: newCropViewFrame)
-
-            /// Configure size and scale of cropImageView
-            cropImageView.setupToZoomFrame(zoomFrame: panEndedCropFrame)
-            
-            ///Configure of x,y coordinates of cropImageView
-            updateCropImageViewOrigin(newCropViewFrame: newCropViewFrame)
+            if cropImageView.updateToZoomFrame(panStartCropFrame: panStartCropFrame,
+                                               panEndCropFrame: panEndCropFrame,
+                                               finalZoomFrame: finalZoomFrame) == false {
+                cropView.updateCropFrame(finalCropFrame: panStartCropFrame)
+            } else {
+                cropView.updateCropFrame(finalCropFrame: finalZoomFrame)
+            }
         }
     }
     
@@ -273,39 +272,14 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
     /// Count new crop frame after pan has ended
     /// Max frame available - cropViewFrame was set at init function
     ///
-    private func countCropFrameToMax(panEndedCropFrame: CGRect) -> CGRect {
+    private func countFinalZoomFrame(fromFrame: CGRect) -> CGRect {
         
-        let scale = min(cropMaxFrame.width / panEndedCropFrame.width, cropMaxFrame.height / panEndedCropFrame.height)
-        let size = CGSize(width: panEndedCropFrame.width * scale, height: panEndedCropFrame.height * scale)
+        let scale = min(cropMaxFrame.width / fromFrame.width, cropMaxFrame.height / fromFrame.height)
+        let size = CGSize(width: fromFrame.width * scale, height: fromFrame.height * scale)
         let xPoint = cropMaxFrame.origin.x + (cropMaxFrame.width - size.width) / 2
         let yPoint = cropMaxFrame.origin.y + (cropMaxFrame.height - size.height) / 2
         
         let rect = CGRect(x: xPoint, y: yPoint, width: size.width, height: size.height)
         return rect
-    }
-    
-    
-    ///
-    /// Setup cropImageView origin point for correnct zoom frame
-    ///
-    private func updateCropImageViewOrigin(newCropViewFrame: CGRect){
-        ///Берем предыдущую верхнюю левую точку области, в которой отображается картинка из cropImageView
-        let originVisableX = cropImageView.originVisablePoint.x
-        let originVisableY = cropImageView.originVisablePoint.y
-        
-        ///Выравниваем origin newCropViewFrame и originVisablePoint для cropImageView
-        let xAlign = newCropViewFrame.origin.x - cropImageView.originVisablePoint.x
-        let yAlign = newCropViewFrame.origin.y - cropImageView.originVisablePoint.y
-        cropImageView.originVisablePoint = CGPoint(x: cropImageView.originVisablePoint.x + xAlign, y: cropImageView.originVisablePoint.y + yAlign)
-        
-        ///Высчитываем на сколько надо сдвинуть влево и вверх cropImageView для отображения увеличенной  выделенной области
-        let scale: CGFloat = min(cropImageView.maxFrame.width / panEndedCropFrame.width, cropImageView.maxFrame.height / panEndedCropFrame.height)
-        let xShift = ((panEndedCropFrame.origin.x - initialCropView.origin.x) * scale)
-        let yShift = ((panEndedCropFrame.origin.y - initialCropView.origin.y) * scale)
-        
-        //подсчитаем все ранее сделанные сдвиги и вычислим длинну предыдущих сдвигов в соответствии с новым scale
-        let curXShift = (originVisableX - cropImageView.frame.origin.x) * scale
-        let curYShift = (originVisableY - cropImageView.frame.origin.y) * scale
-        cropImageView.frame.origin = CGPoint(x: cropImageView.originVisablePoint.x - (curXShift + xShift), y: cropImageView.originVisablePoint.y - (curYShift + yShift))
     }
 }

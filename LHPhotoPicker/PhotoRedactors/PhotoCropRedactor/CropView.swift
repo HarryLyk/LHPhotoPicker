@@ -139,9 +139,9 @@ class CropView: UIView {
     }
     
     
-    func updateCropView(newCropFrame: CGRect) {
-        self.frame = newCropFrame
-        configureCropViewButtons(size: newCropFrame.size)
+    func updateCropFrame(finalCropFrame: CGRect) {
+        self.frame = finalCropFrame
+        configureCropViewButtons(size: finalCropFrame.size)
     }
     
     func configureCropViewButtons(size: CGSize) -> Bool{
