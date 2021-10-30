@@ -15,7 +15,11 @@ class CropImageView : UIImageView {
     var scale: CGFloat = .init()
     var maxScale: CGFloat = 3.5
     var maxFrame: CGRect = .init()
-    var originVisablePoint: CGPoint = .init() //вкрзхняя правая точка виимой области картинки
+    var originVisablePoint: CGPoint = .init() //top left visable point of CropImageView
+    var isAnimation: Bool = true
+    var delay: Double = 0
+    var duration: TimeInterval = 0.5
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -72,9 +76,6 @@ class CropImageView : UIImageView {
         } else {
             self.scale = self.scale * scale
         }
-        
-        /// Update frame
-        self.frame.size = CGSize(width: self.frame.width * scale, height: self.frame.height * scale)
 
         /// Update origin
         ///Берем предыдущую верхнюю левую точку области, в которой отображается картинка из cropImageView
@@ -93,8 +94,34 @@ class CropImageView : UIImageView {
         //подсчитаем все ранее сделанные сдвиги и вычислим длинну предыдущих сдвигов в соответствии с новым scale
         let curXShift = (originVisableX - self.frame.origin.x) * scale
         let curYShift = (originVisableY - self.frame.origin.y) * scale
-        self.frame.origin = CGPoint(x: self.originVisablePoint.x - (curXShift + xShift), y: self.originVisablePoint.y - (curYShift + yShift))
+        
+        UIView.animate(withDuration: duration, animations: {
+            self.isUserInteractionEnabled = false
+            let finalX = self.originVisablePoint.x - (curXShift + xShift)
+            let finalY = self.originVisablePoint.y - (curYShift + yShift)
+            self.frame = CGRect(x: finalX, y: finalY, width: self.frame.width * scale, height: self.frame.height * scale)
+        }, completion: { done in
+            if done {
+                self.isUserInteractionEnabled = true
+            }
+        })
         
         return true
+    }
+    
+    private func createZoomAnimation(startFrame: CGRect, endFrame: CGRect) -> CABasicAnimation {
+        
+        let animation = CABasicAnimation(keyPath: "zoom")
+        
+        animation.fromValue = startFrame
+        animation.toValue = endFrame
+        animation.duration = self.duration
+        animation.beginTime = CACurrentMediaTime() + self.delay
+        animation.isRemovedOnCompletion = false
+        animation.fillMode = .both
+        
+        self.layer.add(animation, forKey: nil)
+        
+        return animation
     }
 }

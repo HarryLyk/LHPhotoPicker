@@ -13,15 +13,11 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
     
     let cropImageView: CropImageView = {
         let imageView = CropImageView(frame: CGRect())
-//        imageView.layer.borderWidth = 2
-//        imageView.layer.borderColor = UIColor.systemRed.cgColor
         return imageView
     }()
     
     var cropView: CropView = {
         let view = CropView(frame: CGRect())
-        view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor.systemGreen.cgColor
         return view
     }()
     
@@ -45,6 +41,20 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
         return button
     }()
     
+    let btnZoneView: UIView = {
+        let btnZoneView = UIView()
+        btnZoneView.backgroundColor = .black
+        btnZoneView.isUserInteractionEnabled = false
+        return btnZoneView
+    }()
+    
+    var hideView: UIView = {
+       let hideView = UIView()
+        hideView.isUserInteractionEnabled = false
+        hideView.backgroundColor = .black
+        hideView.layer.opacity = 1
+        return hideView
+    }()
     
     let botBtnConstr: CGFloat = 30              //constraint between bottom button anchor and view anchor
     let btnHeight: CGFloat = 40                 //button height
@@ -55,7 +65,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
     
     var panStartCropFrame: CGRect = CGRect()
     var panEndCropFrame: CGRect = CGRect()
-    var cropMaxFrame: CGRect = CGRect()
+    var maxCropFrame: CGRect = CGRect()
     
     var viewModel: CropRedactorViewModel!
     var disposeBag = DisposeBag()
@@ -78,50 +88,129 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
         view.addSubview(btnCancel)
         view.addSubview(cropImageView)
         view.addSubview(cropView)
+        view.addSubview(btnZoneView)
+        view.addSubview(hideView)
     }
     
     func setupSubviews() {
+        ///Set max bottom constraint for cropImageView
+        botCropImageViewConstraint = botBtnConstr + btnHeight + topBtnConstr
+        
+        ///Set special space for button elements, so CropImageView will not cover up buttons during image move to bot positions
+        btnZoneView.frame = CGRect(x: 0, y: self.view.frame.height - botCropImageViewConstraint, width: self.view.frame.width, height: botCropImageViewConstraint)
+        
         btnCancel.translatesAutoresizingMaskIntoConstraints = false
         btnCancel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         btnCancel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -botBtnConstr).isActive = true
         btnCancel.widthAnchor.constraint(equalToConstant: 80).isActive = true
         btnCancel.heightAnchor.constraint(equalToConstant: btnHeight).isActive = true
+        btnCancel.superview?.bringSubviewToFront(btnCancel)
         
         btnApply.translatesAutoresizingMaskIntoConstraints = false
         btnApply.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         btnApply.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -botBtnConstr).isActive = true
         btnApply.widthAnchor.constraint(equalToConstant: 80).isActive = true
         btnApply.heightAnchor.constraint(equalToConstant: btnHeight).isActive = true
+        btnApply.superview?.bringSubviewToFront(btnApply)
         
-        ///set maximum area, available for image
+        ///Set maximum area, available for image
         let heightToView = btnHeight + botBtnConstr + topBtnConstr + topCropImageViewConsraint
-        cropMaxFrame = CGRect(x: view.frame.origin.x + svHorisontalConstr,
+        maxCropFrame = CGRect(x: view.frame.origin.x + svHorisontalConstr,
                                y: view.frame.origin.y + topCropImageViewConsraint,
                                width: view.frame.width - svHorisontalConstr * 2,
                                height: view.frame.height - heightToView)
         
-        ///
-        ///  Setup cropImageView frame, so cropImageView could count image XY and size
-        ///  parameters according to superview (this controller) XY coordinates
-        ///
-        if cropImageView.setupCropImageView(maxCropImageViewFrame: cropMaxFrame, image: viewModel.image, maxScale: 3.5) == false {
+        // Setup cropImageView
+        if cropImageView.setupCropImageView(maxCropImageViewFrame: maxCropFrame, image: viewModel.image, maxScale: 3.5) == false {
             self.dismiss(animated: true, completion: nil)
         }
-        if cropView.setupCropView(maxCropViewFrame: cropMaxFrame, frame: cropImageView.frame) == false {
+        setupCropImageView()
+        
+        // Setup CropView
+        if cropView.setupCropView(frame: cropImageView.frame, maxFrame: maxCropFrame) == false {
             self.dismiss(animated: true, completion: nil)
         }
+        setupCropView()
         
-        ///Set max bottom constraint for cropImageView
-        botCropImageViewConstraint = botBtnConstr + btnHeight + topBtnConstr
-        
-        ///Setup pan handler function for cropView buttons
-        cropView.setCropBtnPan(target: self, action: #selector(handleCropBtnPan(_:)))
-        cropView.addPangestureRecognizers()
+        let hideFrame = CGRect(x: view.frame.minX, y: view.frame.minY, width: view.frame.width, height: view.frame.height - botCropImageViewConstraint)
+        setupHideView(hideFrame: hideFrame, cropFrame: cropView.frame)
     }
     
+    /// Setup CropImageView
+    private func setupCropImageView(){
+        cropImageView.duration = 0.5
+    }
+    
+    /// Setup CropView
+    private func setupCropView(){
+        cropView.setCropBtnPan(target: self, action: #selector(handleCropBtnPan(_:)))
+        cropView.addPangestureRecognizers()
+        cropView.duration = 0.5
+    }
+    
+    /// Setup HideView
+    private func setupHideView(hideFrame: CGRect, cropFrame: CGRect){
+        hideView.frame = hideFrame
+        hideView.layer.mask = createCropMask(hideFrame: hideFrame, cropFrame: cropFrame)
+    }
+    
+    private func updateHideView(cropFrame: CGRect){
+        hideView.layer.mask = createCropMask(hideFrame: hideView.frame, cropFrame: cropFrame)
+    }
+    
+    private func updateHideViewWithAnimation(startCropFrame: CGRect, endCropFrame: CGRect){
+        hideView.layer.opacity = 0.5
+        
+        //
+        // INCORRECT
+        //
+        
+        let newMask = createCropMask(hideFrame: hideView.frame, cropFrame: endCropFrame)
+        let newPath = UIBezierPath(rect: newMask.bounds)
+        
+        let oldMask = createCropMask(hideFrame: hideView.frame, cropFrame: startCropFrame)
+        let oldPath = UIBezierPath(rect: oldMask.bounds)
+        
+        /// Layer animations
+        let animation = createAnimation(fromValue: oldPath.cgPath, toValue: newPath.cgPath, duration: 3)
+//        hideView.layer.mask?.add(animation, forKey: nil)
+        hideView.layer.add(animation, forKey: nil)
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        hideView.layer.mask = newMask
+        CATransaction.commit()
+        
+        hideView.layer.opacity = 1
+    }
+    
+    func createAnimation(fromValue: CGPath, toValue: CGPath, duration: TimeInterval) -> CABasicAnimation {
+                        
+        let animation = CABasicAnimation(keyPath: "path")
+        
+        animation.fromValue = fromValue
+        animation.toValue = toValue
+        
+        animation.duration = 5
+        animation.beginTime = CACurrentMediaTime()
+        animation.isRemovedOnCompletion = false
+        
+        return animation
+    }
+    
+    private func createCropMask(hideFrame: CGRect, cropFrame: CGRect) -> CAShapeLayer {
+        let mutablePath = CGMutablePath()
+        mutablePath.addRect(hideFrame)
+        mutablePath.addRect(cropFrame)
+        
+        let mask = CAShapeLayer()
+        mask.path = mutablePath
+        mask.fillRule = .evenOdd
+
+        return mask
+    }
     
     func setupRx() {
-        
         btnApply.rx.tap
             .subscribe(onNext:{ [weak self] _ in
                 print("apply button was tapped")
@@ -148,6 +237,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
         
         if gestureRecognizer.state == .began {
             self.panStartCropFrame = cropView.frame
+            self.hideView.layer.opacity = 0.5
         }
         
         if gestureRecognizer.state == .changed {
@@ -249,8 +339,12 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                 return
             }
             
+            ///update cropView frame during .changed state
             cropView.updateCropFrame(finalCropFrame: cropFrame)
+            ///save current changed cropView frame for use in .end state
             panEndCropFrame = cropFrame
+            ///update hide area
+            updateHideView(cropFrame: cropFrame)
         }
         
         if gestureRecognizer.state == .ended {
@@ -261,8 +355,10 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
                                                panEndCropFrame: panEndCropFrame,
                                                finalZoomFrame: finalZoomFrame) == false {
                 cropView.updateCropFrame(finalCropFrame: panStartCropFrame)
+                updateHideView(cropFrame: panStartCropFrame)
             } else {
-                cropView.updateCropFrame(finalCropFrame: finalZoomFrame)
+                cropView.updateCropFrameWithAnimation(startCropFrame: panEndCropFrame, finalCropFrame: finalZoomFrame)
+                updateHideViewWithAnimation(startCropFrame: panEndCropFrame, endCropFrame: finalZoomFrame)
             }
         }
     }
@@ -270,14 +366,14 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
     
     ///
     /// Count new crop frame after pan has ended
-    /// Max frame available - cropViewFrame was set at init function
+    /// Max frame available for cropViewFrame was set in init function
     ///
     private func countFinalZoomFrame(fromFrame: CGRect) -> CGRect {
         
-        let scale = min(cropMaxFrame.width / fromFrame.width, cropMaxFrame.height / fromFrame.height)
+        let scale = min(maxCropFrame.width / fromFrame.width, maxCropFrame.height / fromFrame.height)
         let size = CGSize(width: fromFrame.width * scale, height: fromFrame.height * scale)
-        let xPoint = cropMaxFrame.origin.x + (cropMaxFrame.width - size.width) / 2
-        let yPoint = cropMaxFrame.origin.y + (cropMaxFrame.height - size.height) / 2
+        let xPoint = maxCropFrame.origin.x + (maxCropFrame.width - size.width) / 2
+        let yPoint = maxCropFrame.origin.y + (maxCropFrame.height - size.height) / 2
         
         let rect = CGRect(x: xPoint, y: yPoint, width: size.width, height: size.height)
         return rect

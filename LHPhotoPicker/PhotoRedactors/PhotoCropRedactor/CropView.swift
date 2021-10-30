@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 protocol CropViewDelegate: AnyObject {
     
@@ -15,59 +16,62 @@ class CropView: UIView {
     
     weak var delegate: CropViewDelegate?
     
+    var delay: Double = 0
+    var duration: TimeInterval = 0.5
+    
     let btnTopLeft: UIButton = {
         let button = UIButton()
-        button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.systemTeal.cgColor
+//        button.layer.borderWidth = 1
+//        button.layer.borderColor = UIColor.white.cgColor
         return button
     }()
     
     let btnTopRight: UIButton = {
         let button = UIButton()
-        button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.systemTeal.cgColor
+//        button.layer.borderWidth = 1
+//        button.layer.borderColor = UIColor.white.cgColor
         return button
     }()
     
     let btnBotRight: UIButton = {
         let button = UIButton()
-        button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.systemTeal.cgColor
+//        button.layer.borderWidth = 1
+//        button.layer.borderColor = UIColor.white.cgColor
         return button
     }()
     
     let btnBotLeft: UIButton = {
         let button = UIButton()
-        button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.systemTeal.cgColor
+//        button.layer.borderWidth = 1
+//        button.layer.borderColor = UIColor.white.cgColor
         return button
     }()
     
     let btnTopLine: UIButton = {
         let button = UIButton()
-        button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.systemTeal.cgColor
+//        button.layer.borderWidth = 1
+//        button.layer.borderColor = UIColor.white.cgColor
         return button
     }()
     
     let btnRightLine: UIButton = {
         let button = UIButton()
-        button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.systemTeal.cgColor
+//        button.layer.borderWidth = 1
+//        button.layer.borderColor = UIColor.white.cgColor
         return button
     }()
     
     let btnBotLine: UIButton = {
         let button = UIButton()
-        button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.systemTeal.cgColor
+//        button.layer.borderWidth = 1
+//        button.layer.borderColor = UIColor.white.cgColor
         return button
     }()
     
     let btnLeftLine: UIButton = {
         let button = UIButton()
-        button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.systemTeal.cgColor
+//        button.layer.borderWidth = 1
+//        button.layer.borderColor = UIColor.white.cgColor
         return button
     }()
     
@@ -99,15 +103,17 @@ class CropView: UIView {
     var minCropHeight: CGFloat = 10  /// minimum cropView height, when handle pan gesture
     var maxFrame: CGRect = .init()
     
-    func setupCropView(maxCropViewFrame: CGRect, frame: CGRect) -> Bool {
+    func setupCropView(frame: CGRect, maxFrame: CGRect) -> Bool {
 
         if (frame.size.width < btnWidth * 2) || (frame.size.height < btnHeight * 2) { return false }
         
         self.frame = frame
-        self.maxFrame = maxCropViewFrame
+        self.maxFrame = maxFrame
         removeCropViews()
         addCropViews()
-        return configureCropViewButtons(size: frame.size)
+        configureCropViewButtons(size: frame.size)
+
+        return true
     }
     
     
@@ -122,6 +128,7 @@ class CropView: UIView {
         btnRightLine.removeFromSuperview()
         btnBotLine.removeFromSuperview()
         btnLeftLine.removeFromSuperview()
+        
     }
     
     
@@ -136,15 +143,29 @@ class CropView: UIView {
         self.addSubview(btnRightLine)
         self.addSubview(btnBotLine)
         self.addSubview(btnLeftLine)
+        
     }
-    
     
     func updateCropFrame(finalCropFrame: CGRect) {
         self.frame = finalCropFrame
         configureCropViewButtons(size: finalCropFrame.size)
     }
     
-    func configureCropViewButtons(size: CGSize) -> Bool{
+    
+    func updateCropFrameWithAnimation(startCropFrame: CGRect, finalCropFrame: CGRect) {
+        self.isUserInteractionEnabled = false
+        UIView.animate(withDuration: self.duration, animations: {
+            self.frame = finalCropFrame
+        }, completion: { done in
+            if done {
+                self.configureCropViewButtons(size: finalCropFrame.size)
+                self.isUserInteractionEnabled = true
+            }
+        })
+    }
+    
+    
+    private func configureCropViewButtons(size: CGSize) {
 
         let rightX = self.bounds.origin.x + (self.bounds.width - btnWidth)
         let botY = self.bounds.origin.y + (self.bounds.height - btnHeight)
@@ -172,9 +193,8 @@ class CropView: UIView {
         ///Setup minimum crop border line size
         minCropWidth = btnWidth * 2
         minCropHeight = btnHeight * 2
-        
-        return true
     }
+    
     
     /// Setup corner buttons pan gestures
     func setCropBtnPan(target: Any?, action: Selector) {
