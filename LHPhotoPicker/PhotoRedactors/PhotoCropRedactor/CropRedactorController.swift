@@ -160,27 +160,7 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
     
     private func updateHideViewWithAnimation(startCropFrame: CGRect, endCropFrame: CGRect){
         hideView.layer.opacity = 0.5
-        
-        //
-        // INCORRECT
-        //
-        
-        let newMask = createCropMask(hideFrame: hideView.frame, cropFrame: endCropFrame)
-        let newPath = UIBezierPath(rect: newMask.bounds)
-        
-        let oldMask = createCropMask(hideFrame: hideView.frame, cropFrame: startCropFrame)
-        let oldPath = UIBezierPath(rect: oldMask.bounds)
-        
-        /// Layer animations
-        let animation = createAnimation(fromValue: oldPath.cgPath, toValue: newPath.cgPath, duration: 3)
-//        hideView.layer.mask?.add(animation, forKey: nil)
-        hideView.layer.add(animation, forKey: nil)
-
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        hideView.layer.mask = newMask
-        CATransaction.commit()
-        
+        hideView.layer.mask = addMaskWithAnimation(hideFrame: hideView.frame, fromMask: startCropFrame, toMask: endCropFrame, duration: 0.5)
         hideView.layer.opacity = 1
     }
     
@@ -196,6 +176,43 @@ class CropRedactorController: UIViewController/*, CropViewDelegate */{
         animation.isRemovedOnCompletion = false
         
         return animation
+    }
+    
+    func addMaskWithAnimation(hideFrame: CGRect, fromMask: CGRect, toMask: CGRect, duration: CFTimeInterval) -> CAShapeLayer {
+    
+        let animation = CABasicAnimation(keyPath: "path")
+    
+        let fromMPath = CGMutablePath()
+        let fromMaskLayer = CAShapeLayer()
+        let toMPath = CGMutablePath()
+        let toMaskLayer = CAShapeLayer()
+    
+        /// Create path for masked layer "from"
+        fromMPath.addRect(hideFrame)
+        fromMPath.addRect(fromMask)
+        fromMaskLayer.path = fromMPath
+        fromMaskLayer.fillRule = .evenOdd
+    
+        /// Create path for masked layer "to"
+        toMPath.addRect(hideFrame)
+        toMPath.addRect(toMask)
+        toMaskLayer.path = toMPath
+        toMaskLayer.fillRule = .evenOdd
+    
+        ///Create animation from two masked layers
+        animation.fromValue = fromMaskLayer.path
+        animation.toValue = toMaskLayer.path
+        animation.duration = duration
+        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+    
+        fromMaskLayer.add(animation, forKey: nil)
+    
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        fromMaskLayer.path = toMaskLayer.path
+        CATransaction.commit()
+    
+        return fromMaskLayer
     }
     
     private func createCropMask(hideFrame: CGRect, cropFrame: CGRect) -> CAShapeLayer {
